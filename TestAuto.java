@@ -101,9 +101,9 @@ public class TestAuto extends LinearOpMode {
             telemetry.update();
         }
 
-    }
+    }//LEX IS VERY COOL 
     public void encoderDrive(double timeOut, double leftSpeed, double rightSpeed, double mtrLeftInches, double mtrRightInches) {
-        int newLeftTarget, newRightTarget,newWGTarget;
+        int newLeftTarget, newRightTarget;
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
