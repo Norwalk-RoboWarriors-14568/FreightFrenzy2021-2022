@@ -95,28 +95,27 @@ public class TestAuto extends LinearOpMode {
         if (opModeIsActive()) {
             motorSetModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);  //stop and reset encoders
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);       //start encoders
-            goForward(10, 0.8, 3);
+            encoderDrive(10, 0.8, 0.8, 10,10);
 
 
             telemetry.update();
         }
 
     }
-    public void encoderDrive(double timeOut, double auxSpeed, double leftSpeed, double rightSpeed, double mtrLeftInches,
-                             double mtrRightInches, double mtrXRail) {
-        int newLeftTarget, newRightTarget, newXRailTarget;
+    public void encoderDrive(double timeOut, double leftSpeed, double rightSpeed, double mtrLeftInches, double mtrRightInches) {
+        int newLeftTarget, newRightTarget,newWGTarget;
         // Ensure that the opmode is still active
         if (opModeIsActive()) {
 
-            motorSetModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);  //stop and reset encoders
-            motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);       //start encoders
+            motorSetModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //stop and reset encoders
+            motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER); //start encoders
 
             // Determine new target position, and pass to motor controller
-            newLeftTarget = motorLeft.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrLeftInches);
-            newRightTarget = motorRight.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrRightInches);
-            newXRailTarget = motorXRail.getCurrentPosition() + (int) (100 * mtrXRail);
+            newLeftTarget = motorLeft.getCurrentPosition() + (int)(CPI_DRIVE_TRAIN * mtrLeftInches);
+            newRightTarget = motorRight.getCurrentPosition() + (int)(CPI_DRIVE_TRAIN * mtrRightInches);
+            //  newWGTarget = motorwg.getCurrentPosition() + (int)(wgmotor * 3892);
 
-            motorSetTargetPos(newLeftTarget, newRightTarget, newXRailTarget);
+            motorSetTargetPos(newLeftTarget, newRightTarget);
 
 
             // Turn On RUN_TO_POSITION
@@ -124,10 +123,21 @@ public class TestAuto extends LinearOpMode {
 
             // reset the timeout time and start motion.
 
-            drive(Math.abs(leftSpeed), Math.abs(rightSpeed));
-            double thisTimeOut = this.time + timeOut;
-            while (opModeIsActive() && (motorLeft.isBusy() || motorRight.isBusy())) {
 
+            //motorLeft.setPower(-1 * Math.abs(speed));
+            //motorLeft2.setPower(Math.abs(speed));
+            //motorRight.setPower(Math.abs(speed));
+            //motorRight2.setPower(-1 * Math.abs(speed));
+
+            double thisTimeOut = this.time + timeOut;
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            // Note: We use (isBusy() && isBusy()) in the loop test, which means that when EITHER motor hits
+            // its target position, the motion will stop.  This is "safer" in the event that the robot will
+            // always end the motion as soon as possible.
+            // However, if you require that BOTH motors have finished their moves before the robot continues
+            // onto the next step, use (isBusy() || isBusy()) in the loop test.
+            while (opModeIsActive() && (motorLeft.isBusy() || motorRight.isBusy())) {
 
                 if (this.time >= thisTimeOut) {
                     /*
@@ -137,18 +147,13 @@ public class TestAuto extends LinearOpMode {
                         }
                     });
                     */
-                    timeOutCount++;
-                    telemetry.addData("Target Left: ", newLeftTarget);
-                    telemetry.addData("Target right: ", newRightTarget);
-                    telemetry.addData("Current Pos Left:", motorLeft.getCurrentPosition());
-                    telemetry.addData("Current Pos Right:", motorRight.getCurrentPosition());
+                    //timeOutCount++;
                     //telemetry.addData("Num of cuts", timeOutCount);
                     break;
                 }
 
-
                 // Display data for the driver.
-                telemetry.addData("GTime", (int) (this.time - gameTimeSnapShot));
+                telemetry.addData("GTime", (int)(this.time - gameTimeSnapShot));
                 telemetry.addData("Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
                 telemetry.addData("Path2", "Running at %7d :%7d",
                         motorLeft.getCurrentPosition(),
@@ -159,21 +164,16 @@ public class TestAuto extends LinearOpMode {
                 telemetry.addData("R2-Tar", motorRight2.getTargetPosition() + "R2-Cur" + motorRight2.getCurrentPosition());
                 telemetry.addData("Lmtr-PWR:" + motorLeft.getPower(), " Rmtr-PWR:" + motorRight.getPower());
 
-                telemetry.addData("right power: ", motorRight.getPower());
-                telemetry.addData("left power: ", motorLeft.getPower());
-
-
                 telemetry.update();
             }
 
             // Stop all motion;
             drive(0, 0);
 
-
             // Turn off RUN_TO_POSITION
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);
             //motorSkystoneGrab.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            sleep(250);   // optional pause after each move in milliseconds
+            sleep(250); // optional pause after each move in milliseconds
         }
 
     }
@@ -194,10 +194,9 @@ public class TestAuto extends LinearOpMode {
         motorRight.setMode(modeName);
     }
 
-    public void motorSetTargetPos(int targetLeft, int targetRight, int targetXRail) {
+    public void motorSetTargetPos(int targetLeft, int targetRight) {
         motorLeft.setTargetPosition(targetLeft);
         motorRight.setTargetPosition(targetRight);
-        motorXRail.setTargetPosition(targetXRail);
     }
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean IsInRange(double inches, double target){
@@ -237,33 +236,7 @@ public class TestAuto extends LinearOpMode {
 
 
     }
-    public void goForward(int inches, double speed, int timeOut){
-        if (opModeIsActive()) {
 
-            motorSetModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);  //stop and reset encoders
-            motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);       //start encoders
-            int newLeftTarget = motorLeft.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * inches);
-            int newRightTarget = motorRight.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * inches);
-            motorLeft.setTargetPosition(newLeftTarget);
-            motorRight.setTargetPosition(newRightTarget);
-            motorSetModes(DcMotor.RunMode.RUN_TO_POSITION);
-            drive(speed, speed);
-            telemetry.addData("Target Left: ", newLeftTarget);
-            telemetry.addData("Target right: ", newRightTarget);
-            telemetry.addData("Current Pos Left:", motorLeft.getCurrentPosition());
-            telemetry.addData("Current Pos Right:", motorRight.getCurrentPosition());
-            telemetry.update();
-            double thisTimeOut = this.time + timeOut;
-            while (opModeIsActive() && !IsInRange(motorLeft.getCurrentPosition(),newLeftTarget)
-                    && !IsInRange(motorRight.getCurrentPosition(),newRightTarget)) {
-                if (this.time >= thisTimeOut) {
-
-                    break;
-                }
-                drive(0,0);
-            }
-        }
-    }
     private void displayInfo(double i, Recognition recognition) {
         // Display label info.
         // Display the label and index number for the recognition.
