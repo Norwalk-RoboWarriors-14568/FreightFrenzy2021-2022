@@ -1,24 +1,12 @@
 package org.firstinspires.ftc.teamcode.OfficalGitHub;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.configuration.WebcamConfiguration;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.util.ElapsedTime;
-import java.util.List;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaCurrentGame;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TfodCurrentGame;
 
 
 @Autonomous(name = "Blue Shipping Hub")
@@ -26,13 +14,13 @@ public class AAABlueShippingHub extends LinearOpMode {
     // Declare OpMode members.
 
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motorLeft = null;
-    private DcMotor motorRight = null;
-    private DcMotor motorLeft2 = null;
-    private DcMotor motorRight2 = null;
+    private DcMotor motorLeftFront = null;
+    private DcMotor motorRightFront = null;
+    private DcMotor motorLeftBack = null;
+    private DcMotor motorRightBack = null;
     private DcMotor motorLift = null;
     private DcMotor motorXRail = null;
-    private DcMotor motorCollecter;
+    private DcMotor motorCollector;
     private CRServo servoLeft, servoRight;
 
 
@@ -60,13 +48,13 @@ public class AAABlueShippingHub extends LinearOpMode {
         CPI_DRIVE_TRAIN = 537.7/ ( 4.75 * Math.PI);
 
 
-        motorLeft  = hardwareMap.dcMotor.get("motor_0");
-        motorLeft2 = hardwareMap.dcMotor.get( "motor_2");
-        motorRight  = hardwareMap.dcMotor.get("motor_1");
-        motorRight2 = hardwareMap.dcMotor.get("motor_3");
+        motorLeftFront = hardwareMap.dcMotor.get("motor_0");
+        motorLeftBack = hardwareMap.dcMotor.get( "motor_2");
+        motorRightFront = hardwareMap.dcMotor.get("motor_1");
+        motorRightBack = hardwareMap.dcMotor.get("motor_3");
         motorXRail =hardwareMap.dcMotor.get("motor_5");
         motorLift = hardwareMap.dcMotor.get("motor_4");
-        motorCollecter = hardwareMap.dcMotor.get("motor_6");
+        motorCollector = hardwareMap.dcMotor.get("motor_6");
         //servoMain = hardwareMap.servo.get("servo_2");
         servoLeft = hardwareMap.crservo.get("servo_1");
         servoRight = hardwareMap.crservo.get("servo_0");
@@ -77,11 +65,11 @@ public class AAABlueShippingHub extends LinearOpMode {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftFront.setDirection(DcMotor.Direction.REVERSE);
+        motorRightFront.setDirection(DcMotor.Direction.REVERSE);
 
-        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
 
@@ -220,15 +208,15 @@ public class AAABlueShippingHub extends LinearOpMode {
 
     public void odometryDrive(double timeOut, double leftDTSpeed, double rightDTSpeed, double mtrLeftInches, double mtrRightInches, boolean strafe) {
         motorSetModes(DcMotor.RunMode.RUN_WITHOUT_ENCODERS);
-        int newLeftTarget = motorLeft.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrLeftInches);
-        int newRightTarget = motorRight.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrRightInches);
+        int newLeftTarget = motorLeftFront.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrLeftInches);
+        int newRightTarget = motorRightFront.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrRightInches);
         double thisTimeOut = this.time + timeOut;
 
 
 
         drive(leftDTSpeed, rightDTSpeed, strafe);
-        while (opModeIsActive() && !IsInRange(motorLeft.getCurrentPosition(),newLeftTarget)
-                && !IsInRange(motorRight.getCurrentPosition(),newRightTarget)) {
+        while (opModeIsActive() && !IsInRange(motorLeftFront.getCurrentPosition(),newLeftTarget)
+                && !IsInRange(motorRightFront.getCurrentPosition(),newRightTarget)) {
             if (this.time >= thisTimeOut) {
                 break;
             }
@@ -236,10 +224,10 @@ public class AAABlueShippingHub extends LinearOpMode {
             //telemetry.addData("Right motor: ",motorRight.getCurrentPosition() );
             telemetry.addData("Target Left: ", newLeftTarget);
             telemetry.addData("Target right: ", newRightTarget);
-            telemetry.addData("Current Pos Left:", motorLeft.getCurrentPosition());
-            telemetry.addData("Current Pos Right:", motorRight.getCurrentPosition());
-            telemetry.addData("right power: ", motorRight.getPower());
-            telemetry.addData("left power: ", motorLeft.getPower());
+            telemetry.addData("Current Pos Left:", motorLeftFront.getCurrentPosition());
+            telemetry.addData("Current Pos Right:", motorRightFront.getCurrentPosition());
+            telemetry.addData("right power: ", motorRightFront.getPower());
+            telemetry.addData("left power: ", motorLeftFront.getPower());
             telemetry.update();
         }
 
@@ -253,26 +241,26 @@ public class AAABlueShippingHub extends LinearOpMode {
         //telemetry.addData("Left/right power: ", left, right);
         telemetry.update();
         if(!strafe){
-            motorLeft.setPower(left);
-            motorRight.setPower(right);
+            motorLeftFront.setPower(left);
+            motorRightFront.setPower(right);
             // motorLeft2.setPower(left);
             // motorRight2.setPower(right);
         }else{
-            motorLeft.setPower(-left);
-            motorRight.setPower(right);
+            motorLeftFront.setPower(-left);
+            motorRightFront.setPower(right);
             //  motorLeft2.setPower(left);
             // motorRight2.setPower(right);
         }
     }
 
     public void motorSetModes(DcMotor.RunMode modeName) {
-        motorLeft.setMode(modeName);
-        motorRight.setMode(modeName);
+        motorLeftFront.setMode(modeName);
+        motorRightFront.setMode(modeName);
     }
 
     public void motorSetTargetPos(int targetLeft, int targetRight) {
-        motorLeft.setTargetPosition(targetLeft);
-        motorRight.setTargetPosition(targetRight);
+        motorLeftFront.setTargetPosition(targetLeft);
+        motorRightFront.setTargetPosition(targetRight);
     }
 
     public boolean IsInRange(double inches, double target){
@@ -282,9 +270,9 @@ public class AAABlueShippingHub extends LinearOpMode {
         }
         return false;
     }public void spitOut(double power){
-        motorCollecter.setPower(power);
+        motorCollector.setPower(power);
         sleep(1500);
-        motorCollecter.setPower(0);
+        motorCollector.setPower(0);
 
     }
     public void spinDuck(double power){//for red Carousel the value needs to be negative
