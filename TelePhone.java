@@ -61,7 +61,7 @@ public class TelePhone extends LinearOpMode {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        reverseMotor();
+        reverseMotors();
         //motorRight2.setDirection(DcMotor.Direction.REVERSE);
 
         motorRightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
