@@ -64,11 +64,7 @@ public class TelePhone extends LinearOpMode {
         reverseMotors();
         //motorRight2.setDirection(DcMotor.Direction.REVERSE);
 
-        motorRightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorLeftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        breakMotors();
 
         //ExtraMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //ExtraMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
