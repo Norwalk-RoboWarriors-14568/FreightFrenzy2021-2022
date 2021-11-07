@@ -52,41 +52,22 @@ public class TelePhone extends LinearOpMode {
         //servoMain = hardwareMap.servo.get("servo_2");
         servoLeft = hardwareMap.crservo.get("servo_1");
         servoRight = hardwareMap.crservo.get("servo_0");
-
-        // ExtraMotor = hardwareMap.get(DcMotor.class, "motor_4");
-        /// ExtraMotor2 = hardwareMap.get(DcMotor.class, "motor_5");
-        // ExtraServo = hardwreMap.get(Servo.class, "servo_0");
-        // ExtraServo2 = hardwareMap.get(Servo.class, "servo_1" );
+        
         timer = new ElapsedTime();//create a timer from the elapsed time class
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
         reverseMotors();
-        //motorRight2.setDirection(DcMotor.Direction.REVERSE);
-
         breakMotors();
-
-        //ExtraMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //ExtraMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //ExtraServo.setDirection(Servo.Direction.FORWARD);//set the servo direction
-        //ExtraServo2.setDirection(Servo.Direction.FORWARD);//set the servo direction
-
-
-
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
         timer.startTime();
-        //ExtraServo.setPosition(SERVO_INITIAL_POS);
-        //ExtraServo2.setPosition(GRABBER_INITIAL_POS);
-        //intakeFrontMotor.setPosition(INTAKE_INITIAL_POS);
-
-        //double startKickTime = 9999;//the time the button was pressed to move the servo (set high so it doesn't hit)
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
 
-
+            //Speed
             if(gamepad1.left_bumper){
                 drive(gamepad1.left_stick_y/2, gamepad1.right_stick_y/2);
 
@@ -109,7 +90,7 @@ public class TelePhone extends LinearOpMode {
                 servoLeft.setPower(0);
                 servoRight.setPower(0);
             }
-
+            //Telemetry
             if (gamepad2.left_stick_y >=  0.2|| gamepad2.left_stick_y <= -0.2){
                 telemetry.addData("Status", "In if");
                 telemetry.update();
@@ -120,6 +101,7 @@ public class TelePhone extends LinearOpMode {
             } else {
                 motorXRail.setPower(0);
             }
+
             if (gamepad2.right_stick_y >=  0.1|| gamepad2.right_stick_y <= -0.1){
                 telemetry.addData("Status", "In if");
                 telemetry.update();
@@ -130,6 +112,7 @@ public class TelePhone extends LinearOpMode {
             } else {
                 motorLift.setPower(0);
             }
+            //MotorCollecter
             if (gamepad2.right_trigger  >= 0.1){
                 motorCollecter.setPower(gamepad2.right_trigger);
 
@@ -139,76 +122,6 @@ public class TelePhone extends LinearOpMode {
             } else {
                 motorCollecter.setPower(0);
             }
-
-
-
-            /*
-            if(gamepad2.y){//if b button pressed
-                startKickTime = timer.time();//start the timer so it knows when to turn around
-            }
-            if(timer.time() - startKickTime > 0.3){//if its been moving for > 0.3 seconds
-                kickerServo.setPosition(SERVO_INITIAL_POS);//reset back to zero
-                startKickTime = 99999;//set kickTime back to value that doesn't trigger this
-            }
-
-            if(gamepad2.x && !buttonG2XPressedLast){
-                if(Math.abs(wobbleServo.getPosition() - GRABBER_INITIAL_POS) < 0.01){
-                    wobbleServo.setPosition(0.52);
-                }
-                else if(Math.abs(wobbleServo.getPosition() - 0.52) < 0.01){
-                    wobbleServo.setPosition(GRABBER_INITIAL_POS);
-                }
-            }
-            buttonG2XPressedLast = gamepad2.x;
-
-            if(gamepad2.a && !buttonG2APressedLast){
-                if (motorIntakeBelt.getPower() != 0) {
-                    motorIntakeBelt.setPower(0);
-                    intakeFrontMotor.setPower(0);
-                }else{
-                    motorIntakeBelt.setPower(1);
-                    intakeFrontMotor.setPower(1);
-                }
-            }
-            buttonG2APressedLast = gamepad2.a;
-
-            if(gamepad2.dpad_right){//if holding right on dpad, reverse it
-                motorIntakeBelt.setPower(-1);
-                intakeFrontMotor.setPower(-1);
-            }
-            buttonG2APressedLast = gamepad2.a;
-
-            if(gamepad2.dpad_up){
-                wobbleMotor.setPower(-0.6);
-            }
-            else if(gamepad2.dpad_down){
-                wobbleMotor.setPower(0.6);
-            }
-            else{
-                wobbleMotor.setPower(0);
-            }
-            //Thrower code to set different speeds
-            if(gamepad2.left_bumper){
-                throwerPower = 0f;
-            }
-            else if(gamepad2.left_trigger > 0.2f){
-                throwerPower = 0.65;
-            }
-            else if(gamepad2.right_bumper){
-                throwerPower = 0.7f;
-            }
-            else if(gamepad2.right_trigger > 0.2f){
-                throwerPower = 0.8f;
-            }
-            throwerMotor.setPower(throwerPower);
-
-*/
-
-
-
-
-
-
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("MotorsFront", "left (%.2f), right (%.2f)", motorLeftBack.getPower(), motorRightBack.getPower());
