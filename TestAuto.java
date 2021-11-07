@@ -56,8 +56,7 @@ public class TestAuto extends LinearOpMode {
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
 
-        motorLeftBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRightBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        breakMotors();
         reverseMotors();
         waitForStart();
         runtime.reset();
@@ -170,6 +169,10 @@ public class TestAuto extends LinearOpMode {
     private void reverseMotors(){
         motorRightBACK.setDirection(DcMotor.Direction.REVERSE);
         motorLeftFRONT.setDirection(DcMotor.Direction.REVERSE);
+    }
+    private void breakMotors(){
+        motorLeftBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRightBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     private void displayInfo(double i, Recognition recognition) {
