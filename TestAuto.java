@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 
-@Autonomous(name = "Blue Shipping Hub")
-public class AAABlueShippingHub extends LinearOpMode {
+@Autonomous(name = "TestAuto")
+public class TestAuto extends LinearOpMode {
     // Declare OpMode members.
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -28,7 +28,7 @@ public class AAABlueShippingHub extends LinearOpMode {
     private ElapsedTime timer;
     private final int CPR_ODOMETRY = 8192;//counts per revolution for encoder, from website
     private final int ODOMETRY_WHEEL_DIAMETER = 4;
-    private double CPI_DRIVE_TRAIN;
+    private double CPI_ATV_DT, CPI_OMNI_DT;
     private int timeOutCount = 0;
     // private VoltageSensor vs;
     private double gameTimeSnapShot = 0;
@@ -38,8 +38,8 @@ public class AAABlueShippingHub extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         //CPI =     ticksPerRev / (circumerence);
-        CPI_DRIVE_TRAIN = 537.7/ ( 4.75 * Math.PI);
-        
+        CPI_ATV_DT = 537.7/ ( 4.75 * Math.PI);
+        CPI_OMNI_DT = 537.7/ (3.75 * Math.PI);
         motorLeftBACK = hardwareMap.dcMotor.get("motor_0");
         motorRightBACK = hardwareMap.dcMotor.get("motor_1");
         motorLeftFRONT = hardwareMap.dcMotor.get( "motor_2");
@@ -65,35 +65,27 @@ public class AAABlueShippingHub extends LinearOpMode {
         if (opModeIsActive()) {
             motorSetModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);
-            odometryDrive(5, 0.8, 0.2, 34, 17, false);//Arc
+            toHub();
             sleep(2000);
             extendOrRetract(-2);//extend or retract - is extend and + is retract// based off time do not put over 4
             spitOut(-1);
-
-            odometryDrive(2.6, -0.1, -0.7, -8, -8, false);//Back straight
+            odometryDrive( 0.1, 0.7, -8, -8 );//Back straight
             sleep(2000);
-            odometryDrive(4, -1, -1, -80, -84, false);//Back straight
+            odometryDrive( 1, 1, -80, -84);//Back straight
             sleep(2000);
-            odometryDrive(2.6, -1, 1, -20, 27, false);//Back straight
+            odometryDrive( 1, 1, -20, 27);//Back straight
             sleep(2000);
-            //odometryDrive(2, -0.37,0.37,10, 10,false);//Turn
+            //odometryDrive(2, -0.37,s0.37,10, 10,false);//Turn
             telemetry.update();
         }
     }
 
-    public void odometryDrive(double timeOut, double leftDTSpeed, double rightDTSpeed, double mtrLeftInches, double mtrRightInches, boolean strafe) {
-        int newLeftTarget = motorLeftFRONT.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrLeftInches);
-        int newRightTarget = motorRightFRONT.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrRightInches);
-        double thisTimeOut = this.time + timeOut;
-
-        drive(leftDTSpeed, rightDTSpeed, strafe);
-        while (opModeIsActive() && !IsInRange(motorLeftBACK.getCurrentPosition(),newLeftTarget)
-                && !IsInRange(motorRightBACK.getCurrentPosition(),newRightTarget)) {
-            if (this.time >= thisTimeOut) {
-                break;
-            }
-
-            //telemetry.addData("Right motor: ",motorRight.getCurrentPosition() );
+    public void odometryDrive( double leftDTSpeed, double rightDTSpeed, double mtrLeftInches, double mtrRightInches) {
+        int newLeftTarget = motorLeftBACK.getCurrentPosition() + (int) (CPI_ATV_DT * mtrLeftInches);
+        int newRightTarget = motorRightBACK.getCurrentPosition() + (int) (CPI_ATV_DT * mtrRightInches);
+        drive(mtrLeftInches < 0 ? -leftDTSpeed : leftDTSpeed, mtrRightInches < 0 ? -rightDTSpeed : rightDTSpeed);
+        while (opModeIsActive() && !IsInRange(motorLeftBACK.getCurrentPosition(), newLeftTarget)
+                && !IsInRange(motorRightBACK.getCurrentPosition(), newRightTarget)) {
             telemetry.addData("Target Left: ", newLeftTarget);
             telemetry.addData("Target right: ", newRightTarget);
             telemetry.addData("Current Pos Left:", motorLeftBACK.getCurrentPosition());
@@ -102,29 +94,19 @@ public class AAABlueShippingHub extends LinearOpMode {
             telemetry.addData("left power: ", motorLeftBACK.getPower());
             telemetry.update();
         }
-
         // Stop all motion;
-        drive(0, 0, strafe);
-
-
+        drive(0, 0);
     }
 
-    public void drive(double left, double right, boolean strafe) {
-        //telemetry.addData("Left/right power: ", left, right);
-        telemetry.update();
-        if(!strafe){
+    public void drive(double left, double right  ) {
             motorLeftBACK.setPower(left);
             motorRightBACK.setPower(right);
-            // motorLeft2.setPower(left);
-            // motorRight2.setPower(right);
-        }else{
-            motorLeftBACK.setPower(-left);
-            motorRightBACK.setPower(right);
-            //  motorLeft2.setPower(left);
-            // motorRight2.setPower(right);
-        }
+            motorRightFRONT.setPower(right);
+            motorLeftFRONT.setPower(left);
     }
-
+    private void toHub(){
+        odometryDrive( 0.8, 0.2, 34, 17 );//Arc
+    }
     public void motorSetModes(DcMotor.RunMode modeName) {
         motorLeftBACK.setMode(modeName);
         motorRightBACK.setMode(modeName);
