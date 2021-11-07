@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 
 @Autonomous(name = "Blue Shipping Hub")
-public class AAABlueShippingHub extends LinearOpMode {
+public class TestAuto extends LinearOpMode {
     // Declare OpMode members.
 
     private ElapsedTime runtime = new ElapsedTime();
