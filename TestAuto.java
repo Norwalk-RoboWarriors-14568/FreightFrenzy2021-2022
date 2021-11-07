@@ -66,9 +66,11 @@ public class TestAuto extends LinearOpMode {
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);
             toHub();
             sleep(2000);
-            /*extendOrRetract(2, 0.5, false);
-            spitOut(-1);
-            turnToWH();
+            extendOrRetract(2, 0.5, false);
+            spitOut(-0.4);
+            extendOrRetract(1, -0.5, false);
+
+            /*turnToWH();
             sleep(2000);
             backIntoWH();
             sleep(2000);
@@ -104,7 +106,7 @@ public class TestAuto extends LinearOpMode {
         motorLeftFRONT.setPower(left);
     }
     private void toHub(){
-        encoderDrive( 0.8, 0.5, 34, 17 );//Arc
+        encoderDrive( 0.8, 0.32, 30, 16 );//Arc
     }
     private void turnToWH(){
         encoderDrive( 0.1, 0.7, -8, -8 );//Turn to Warehouse
@@ -166,6 +168,8 @@ public class TestAuto extends LinearOpMode {
     private void brakeMotors(){
         motorLeftBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRightBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorXRail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
     }
 
 }
