@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 
-@Autonomous(name = "TestAuto")
+@Autonomous(name = "dgs;lkgn;lfnbkl;zdxnbk")
 
 public class TestAuto extends LinearOpMode {
     // Declare OpMode members.
@@ -51,14 +51,13 @@ public class TestAuto extends LinearOpMode {
         servoRight = hardwareMap.crservo.get("servo_0");
         servoLeft = hardwareMap.crservo.get("servo_1");
         //servoMain = hardwareMap.servo.get("servo_2");
-
         timer = new ElapsedTime();//create a timer from the elapsed time class
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
 
         brakeMotors();
-        //reverseMotors();
+        reverseMotors();
         waitForStart();
         runtime.reset();
         //run autonomous
@@ -67,7 +66,7 @@ public class TestAuto extends LinearOpMode {
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);
             toHub();
             sleep(2000);
-            extendOrRetract(2, 0.5, false);
+            /*extendOrRetract(2, 0.5, false);
             spitOut(-1);
             turnToWH();
             sleep(2000);
@@ -76,6 +75,7 @@ public class TestAuto extends LinearOpMode {
             rotateRight90();
             sleep(2000);
             telemetry.update();
+            */
         }
     }
 
@@ -104,13 +104,13 @@ public class TestAuto extends LinearOpMode {
         motorLeftFRONT.setPower(left);
     }
     private void toHub(){
-        encoderDrive( 0.8, 0.2, 34, 17 );//Arc
+        encoderDrive( 0.8, 0.5, 34, 17 );//Arc
     }
     private void turnToWH(){
         encoderDrive( 0.1, 0.7, -8, -8 );//Turn to Warehouse
     }
     private void rotateRight90() {
-        encoderDrive( 1, 1, -20, 27);//Back straight
+        encoderDrive( 1, 1, 13.5, -10);//Back straight
     }
     private void backIntoWH() {
         encoderDrive( 1, 1, -80, -84);//Back straight
@@ -158,7 +158,7 @@ public class TestAuto extends LinearOpMode {
     }
 
     private void reverseMotors(){
-        motorRightBACK.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftBACK.setDirection(DcMotor.Direction.REVERSE);
         motorLeftFRONT.setDirection(DcMotor.Direction.REVERSE);
         motorXRail.setDirection(DcMotor.Direction.REVERSE);
 
