@@ -3,20 +3,16 @@ package org.firstinspires.ftc.teamcode.OfficalGitHub;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.CRServo;
 
 @TeleOp(name="Teleop", group="Linear Opmode")
 public class TelePhone extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motorLeft, motorLeft2,
-            motorRight, motorRight2, motorXRail, motorLift, motorCollecter;
+    private DcMotor motorLeftBack, motorLeftFront,
+            motorRightBack, motorRightFront, motorXRail, motorLift, motorCollecter;
     private CRServo servoLeft, servoRight, servoMain;
 
     //private DcMotor ExtraMotor = null;
@@ -28,10 +24,10 @@ public class TelePhone extends LinearOpMode {
     private boolean buttonG2APressedLast = false;
 
     public void drive(double left, double right){
-        motorLeft.setPower(left);
-        motorLeft2.setPower(left);
-        motorRight.setPower(right);
-        motorRight2.setPower(right);
+        motorLeftBack.setPower(left);
+        motorLeftFront.setPower(left);
+        motorRightBack.setPower(right);
+        motorRightFront.setPower(right);
 
     }
 
@@ -46,10 +42,10 @@ public class TelePhone extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        motorLeft  = hardwareMap.dcMotor.get("motor_0");
-        motorLeft2 = hardwareMap.dcMotor.get( "motor_2");
-        motorRight  = hardwareMap.dcMotor.get("motor_3");
-        motorRight2 = hardwareMap.dcMotor.get("motor_1");
+        motorLeftBack = hardwareMap.dcMotor.get("motor_0");
+        motorLeftFront = hardwareMap.dcMotor.get( "motor_2");
+        motorRightBack = hardwareMap.dcMotor.get("motor_3");
+        motorRightFront = hardwareMap.dcMotor.get("motor_1");
         motorXRail =hardwareMap.dcMotor.get("motor_5");
         motorLift = hardwareMap.dcMotor.get("motor_4");
         motorCollecter = hardwareMap.dcMotor.get("motor_6");
@@ -65,13 +61,13 @@ public class TelePhone extends LinearOpMode {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
+        reverseMotor();
         //motorRight2.setDirection(DcMotor.Direction.REVERSE);
 
-        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRight2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorLeft2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLeftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //ExtraMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -148,6 +144,8 @@ public class TelePhone extends LinearOpMode {
                 motorCollecter.setPower(0);
             }
 
+
+
             /*
             if(gamepad2.y){//if b button pressed
                 startKickTime = timer.time();//start the timer so it knows when to turn around
@@ -217,10 +215,15 @@ public class TelePhone extends LinearOpMode {
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("MotorsFront", "left (%.2f), right (%.2f)", motorLeft.getPower(), motorRight.getPower());
-            telemetry.addData("MotorsBack ", "left (%.2f), right (%.2f)", motorLeft2.getPower(), motorRight2.getPower());
+            telemetry.addData("MotorsFront", "left (%.2f), right (%.2f)", motorLeftBack.getPower(), motorRightBack.getPower());
+            telemetry.addData("MotorsBack ", "left (%.2f), right (%.2f)", motorLeftFront.getPower(), motorRightFront.getPower());
             telemetry.update();
 
         }
+
+    }
+    private void reverseMotors(){
+        motorRightBack.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftFront.setDirection(DcMotor.Direction.REVERSE);
     }
 }
