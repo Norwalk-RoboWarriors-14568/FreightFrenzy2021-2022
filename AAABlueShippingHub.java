@@ -14,10 +14,10 @@ public class AAABlueShippingHub extends LinearOpMode {
     // Declare OpMode members.
 
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motorLeftFront = null;
-    private DcMotor motorRightFront = null;
-    private DcMotor motorLeftBack = null;
-    private DcMotor motorRightBack = null;
+    private DcMotor motorLeftBACK = null;
+    private DcMotor motorRightBACK = null;
+    private DcMotor motorLeftFRONT = null;
+    private DcMotor motorRightFRONT = null;
     private DcMotor motorLift = null;
     private DcMotor motorXRail = null;
     private DcMotor motorCollector;
@@ -48,28 +48,29 @@ public class AAABlueShippingHub extends LinearOpMode {
         CPI_DRIVE_TRAIN = 537.7/ ( 4.75 * Math.PI);
 
 
-        motorLeftFront = hardwareMap.dcMotor.get("motor_0");
-        motorLeftBack = hardwareMap.dcMotor.get( "motor_2");
-        motorRightFront = hardwareMap.dcMotor.get("motor_1");
-        motorRightBack = hardwareMap.dcMotor.get("motor_3");
-        motorXRail =hardwareMap.dcMotor.get("motor_5");
+        motorLeftBACK = hardwareMap.dcMotor.get("motor_0");
+        motorRightBACK = hardwareMap.dcMotor.get("motor_1");
+        motorLeftFRONT = hardwareMap.dcMotor.get( "motor_2");
+        motorRightFRONT = hardwareMap.dcMotor.get("motor_3");
         motorLift = hardwareMap.dcMotor.get("motor_4");
+        motorXRail =hardwareMap.dcMotor.get("motor_5");
         motorCollector = hardwareMap.dcMotor.get("motor_6");
-        //servoMain = hardwareMap.servo.get("servo_2");
-        servoLeft = hardwareMap.crservo.get("servo_1");
         servoRight = hardwareMap.crservo.get("servo_0");
+        servoLeft = hardwareMap.crservo.get("servo_1");
+        //servoMain = hardwareMap.servo.get("servo_2");
 
-        // vs  = this.hardwareMap.voltageSensor.iterator().next();
+
+
         timer = new ElapsedTime();//create a timer from the elapsed time class
 
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        motorLeftFront.setDirection(DcMotor.Direction.REVERSE);
-        motorRightFront.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftBACK.setDirection(DcMotor.Direction.REVERSE);
+        motorRightBACK.setDirection(DcMotor.Direction.REVERSE);
 
-        motorLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLeftBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRightBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
 
@@ -208,15 +209,15 @@ public class AAABlueShippingHub extends LinearOpMode {
 
     public void odometryDrive(double timeOut, double leftDTSpeed, double rightDTSpeed, double mtrLeftInches, double mtrRightInches, boolean strafe) {
         motorSetModes(DcMotor.RunMode.RUN_WITHOUT_ENCODERS);
-        int newLeftTarget = motorLeftFront.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrLeftInches);
-        int newRightTarget = motorRightFront.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrRightInches);
+        int newLeftTarget = motorLeftBACK.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrLeftInches);
+        int newRightTarget = motorRightBACK.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrRightInches);
         double thisTimeOut = this.time + timeOut;
 
 
 
         drive(leftDTSpeed, rightDTSpeed, strafe);
-        while (opModeIsActive() && !IsInRange(motorLeftFront.getCurrentPosition(),newLeftTarget)
-                && !IsInRange(motorRightFront.getCurrentPosition(),newRightTarget)) {
+        while (opModeIsActive() && !IsInRange(motorLeftBACK.getCurrentPosition(),newLeftTarget)
+                && !IsInRange(motorRightBACK.getCurrentPosition(),newRightTarget)) {
             if (this.time >= thisTimeOut) {
                 break;
             }
@@ -224,10 +225,10 @@ public class AAABlueShippingHub extends LinearOpMode {
             //telemetry.addData("Right motor: ",motorRight.getCurrentPosition() );
             telemetry.addData("Target Left: ", newLeftTarget);
             telemetry.addData("Target right: ", newRightTarget);
-            telemetry.addData("Current Pos Left:", motorLeftFront.getCurrentPosition());
-            telemetry.addData("Current Pos Right:", motorRightFront.getCurrentPosition());
-            telemetry.addData("right power: ", motorRightFront.getPower());
-            telemetry.addData("left power: ", motorLeftFront.getPower());
+            telemetry.addData("Current Pos Left:", motorLeftBACK.getCurrentPosition());
+            telemetry.addData("Current Pos Right:", motorRightBACK.getCurrentPosition());
+            telemetry.addData("right power: ", motorRightBACK.getPower());
+            telemetry.addData("left power: ", motorLeftBACK.getPower());
             telemetry.update();
         }
 
@@ -241,26 +242,26 @@ public class AAABlueShippingHub extends LinearOpMode {
         //telemetry.addData("Left/right power: ", left, right);
         telemetry.update();
         if(!strafe){
-            motorLeftFront.setPower(left);
-            motorRightFront.setPower(right);
+            motorLeftBACK.setPower(left);
+            motorRightBACK.setPower(right);
             // motorLeft2.setPower(left);
             // motorRight2.setPower(right);
         }else{
-            motorLeftFront.setPower(-left);
-            motorRightFront.setPower(right);
+            motorLeftBACK.setPower(-left);
+            motorRightBACK.setPower(right);
             //  motorLeft2.setPower(left);
             // motorRight2.setPower(right);
         }
     }
 
     public void motorSetModes(DcMotor.RunMode modeName) {
-        motorLeftFront.setMode(modeName);
-        motorRightFront.setMode(modeName);
+        motorLeftBACK.setMode(modeName);
+        motorRightBACK.setMode(modeName);
     }
 
     public void motorSetTargetPos(int targetLeft, int targetRight) {
-        motorLeftFront.setTargetPosition(targetLeft);
-        motorRightFront.setTargetPosition(targetRight);
+        motorLeftBACK.setTargetPosition(targetLeft);
+        motorRightBACK.setTargetPosition(targetRight);
     }
 
     public boolean IsInRange(double inches, double target){
