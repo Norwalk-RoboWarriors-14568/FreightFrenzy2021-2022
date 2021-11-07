@@ -67,7 +67,7 @@ public class TestAuto extends LinearOpMode {
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);
             toHub();
             sleep(2000);
-            extendOrRetract(-2);//extend or retract - is extend and + is retract// based off time do not put over 4
+            extendOrRetract(2, 0.5, false);
             spitOut(-1);
             odometryDrive( 0.1, 0.7, -8, -8 );//Back straight
             sleep(2000);
@@ -135,17 +135,15 @@ public class TestAuto extends LinearOpMode {
         servoLeft.setPower(0);
 
     }
-    public void extendOrRetract(int power){
-        if (power > 0) {
-            motorXRail.setPower(0.5);//30 %
-            sleep(power * 1000);
+    public void extendOrRetract(double seconds,double power,  boolean in){
+        if (!in) {
+            motorXRail.setPower(power);//30 %
+            sleep((long) (seconds * 1000));
             motorXRail.setPower(0);
-        }else if (power < 0){
-            motorXRail.setPower(-0.5);//30 %
-            sleep(power * -1000);
+        }else if (in) {
+            motorXRail.setPower(-power);//30 %
+            sleep((long) seconds * -1000);
             motorXRail.setPower(0);
-        } else {
-            power = 0;
         }
     }
 
