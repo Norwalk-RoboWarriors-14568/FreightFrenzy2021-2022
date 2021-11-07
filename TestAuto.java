@@ -57,8 +57,8 @@ public class TestAuto extends LinearOpMode {
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
 
-        breakMotors();
-        reverseMotors();
+        brakeMotors();
+        //reverseMotors();
         waitForStart();
         runtime.reset();
         //run autonomous
@@ -69,18 +69,17 @@ public class TestAuto extends LinearOpMode {
             sleep(2000);
             extendOrRetract(2, 0.5, false);
             spitOut(-1);
-            odometryDrive( 0.1, 0.7, -8, -8 );//Back straight
+            turnToWH();
             sleep(2000);
-            odometryDrive( 1, 1, -80, -84);//Back straight
+            backIntoWH();
             sleep(2000);
-            odometryDrive( 1, 1, -20, 27);//Back straight
+            rotateRight90();
             sleep(2000);
-            //odometryDrive(2, -0.37,s0.37,10, 10,false);//Turn
             telemetry.update();
         }
     }
 
-    public void odometryDrive( double leftDTSpeed, double rightDTSpeed, double mtrLeftInches, double mtrRightInches) {
+    public void encoderDrive(double leftDTSpeed, double rightDTSpeed, double mtrLeftInches, double mtrRightInches) {
         int newLeftTarget = motorLeftBACK.getCurrentPosition() + (int) (CPI_ATV_DT * mtrLeftInches);
         int newRightTarget = motorRightBACK.getCurrentPosition() + (int) (CPI_ATV_DT * mtrRightInches);
         drive(mtrLeftInches < 0 ? -leftDTSpeed : leftDTSpeed, mtrRightInches < 0 ? -rightDTSpeed : rightDTSpeed);
@@ -99,17 +98,28 @@ public class TestAuto extends LinearOpMode {
     }
 
     public void drive(double left, double right  ) {
-            motorLeftBACK.setPower(left);
-            motorRightBACK.setPower(right);
-            motorRightFRONT.setPower(right);
-            motorLeftFRONT.setPower(left);
+        motorLeftBACK.setPower(left);
+        motorRightBACK.setPower(right);
+        motorRightFRONT.setPower(right);
+        motorLeftFRONT.setPower(left);
     }
     private void toHub(){
-        odometryDrive( 0.8, 0.2, 34, 17 );//Arc
+        encoderDrive( 0.8, 0.2, 34, 17 );//Arc
+    }
+    private void turnToWH(){
+        encoderDrive( 0.1, 0.7, -8, -8 );//Turn to Warehouse
+    }
+    private void rotateRight90() {
+        encoderDrive( 1, 1, -20, 27);//Back straight
+    }
+    private void backIntoWH() {
+        encoderDrive( 1, 1, -80, -84);//Back straight
     }
     public void motorSetModes(DcMotor.RunMode modeName) {
         motorLeftBACK.setMode(modeName);
         motorRightBACK.setMode(modeName);
+        motorLeftFRONT.setMode(modeName);
+        motorRightFRONT.setMode(modeName);
     }
 
     public void motorSetTargetPos(int targetLeft, int targetRight) {
@@ -150,20 +160,12 @@ public class TestAuto extends LinearOpMode {
     private void reverseMotors(){
         motorRightBACK.setDirection(DcMotor.Direction.REVERSE);
         motorLeftFRONT.setDirection(DcMotor.Direction.REVERSE);
+        motorXRail.setDirection(DcMotor.Direction.REVERSE);
+
     }
-    private void breakMotors(){
+    private void brakeMotors(){
         motorLeftBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRightBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    private void displayInfo(double i, Recognition recognition) {
-        // Display label info.
-        // Display the label and index number for the recognition.
-        telemetry.addData("label " + i, recognition.getLabel());
-        telemetry.addData("width: ", recognition.getWidth() );
-        telemetry.addData("height: ", recognition.getHeight() );
-        telemetry.addData("H/W Ratio: ", recognition.getHeight()/recognition.getWidth() );
-    }
 }
-
-
