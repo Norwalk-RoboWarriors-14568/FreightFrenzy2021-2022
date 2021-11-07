@@ -26,13 +26,13 @@ public class AAARedShippingHub extends LinearOpMode {
     // Declare OpMode members.
 
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor motorLeft = null;
-    private DcMotor motorRight = null;
-    private DcMotor motorLeft2 = null;
-    private DcMotor motorRight2 = null;
+    private DcMotor motorLeftBACK = null;
+    private DcMotor motorRightBACK = null;
+    private DcMotor motorLeftFRONT = null;
+    private DcMotor motorRightFRONT = null;
     private DcMotor motorLift = null;
     private DcMotor motorXRail = null;
-    private DcMotor motorCollecter;
+    private DcMotor motorCollector;
     private CRServo servoLeft, servoRight;
 
 
