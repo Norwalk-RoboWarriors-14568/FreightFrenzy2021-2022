@@ -33,18 +33,25 @@ public class TestAuto extends LinearOpMode {
     private int timeOutCount = 0;
     // private VoltageSensor vs;
     private double gameTimeSnapShot = 0;
+    private SharedDrive drive;
+    private TelemetryDisplay ourTelemtry;
+    private Motors motors;
 
     @Override
     public void runOpMode() {
+        CPI_ATV_DT = 537.7/ ( 4.75 * Math.PI);
+        CPI_OMNI_DT = 537.7/ (3.75 * Math.PI);
+        ourTelemtry = new TelemetryDisplay(telemetry);
+        motors = new Motors();
+        motors.backLeft = hardwareMap.dcMotor.get("motor_0");
+        motors.backRight = hardwareMap.dcMotor.get("motor_1");
+        motors.frontLeft = hardwareMap.dcMotor.get( "motor_2");
+        motors.frontRight = hardwareMap.dcMotor.get("motor_3");
+        drive = new SharedDrive(ourTelemtry, motors, CPI_ATV_DT);
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         //CPI =     ticksPerRev / (circumerence);
-        CPI_ATV_DT = 537.7/ ( 4.75 * Math.PI);
-        CPI_OMNI_DT = 537.7/ (3.75 * Math.PI);
-        motorLeftBACK = hardwareMap.dcMotor.get("motor_0");
-        motorRightBACK = hardwareMap.dcMotor.get("motor_1");
-        motorLeftFRONT = hardwareMap.dcMotor.get( "motor_2");
-        motorRightFRONT = hardwareMap.dcMotor.get("motor_3");
         motorLift = hardwareMap.dcMotor.get("motor_4");
         motorXRail =hardwareMap.dcMotor.get("motor_5");
         motorCollector = hardwareMap.dcMotor.get("motor_6");
@@ -123,7 +130,9 @@ public class TestAuto extends LinearOpMode {
             return true;
         }
         return false;
-    }public void spitOut(double power){
+    }
+
+    public void spitOut(double power){
         motorCollector.setPower(power);
         sleep(1500);
         motorCollector.setPower(0);
