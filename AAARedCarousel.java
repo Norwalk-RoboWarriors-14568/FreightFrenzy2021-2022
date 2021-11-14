@@ -102,7 +102,7 @@ public class AAARedCarousel extends LinearOpMode {
                 spitOut(-1);
                 extendOrRetract(-1);//extend or retract - is extend and + is retract// based off time do not put over 4
 
-                encoderDrive( 0, 1,4,-11);////
+                encoderDrive( 0, 1,4,-12);////
                                 
                 sleep(500);
 

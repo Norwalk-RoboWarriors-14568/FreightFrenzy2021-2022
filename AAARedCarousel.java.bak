@@ -1,5 +1,4 @@
-package org.firstinspires.ftc.teamcode.OfficalGitHub;
-
+package Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import java.lang.annotation.Target;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -25,7 +24,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TfodCurrentGame;
 @Autonomous(name = "Red Car")
 public class AAARedCarousel extends LinearOpMode {
     // Declare OpMode members.
-
+    
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motorLeftBACK = null;
     private DcMotor motorRightBACK = null;
@@ -35,7 +34,8 @@ public class AAARedCarousel extends LinearOpMode {
     private DcMotor motorXRail = null;
     private DcMotor motorCollector;
     private CRServo servoLeft, servoRight;
-    // private Servo servomain;
+    private double CPI_ATV_DT, CPI_OMNI_DT;
+   // private Servo servomain;
 
     //private boolean buttonG2APressest = false;
     //private boolean buttonG2XPressedLast = false;
@@ -49,7 +49,7 @@ public class AAARedCarousel extends LinearOpMode {
     private double leftPos = 0;
     private double rightPos = 0;
     private int timeOutCount = 0;
-    // private VoltageSensor vs;
+   // private VoltageSensor vs;
     private double gameTimeSnapShot = 0;
 
     @Override
@@ -58,195 +58,99 @@ public class AAARedCarousel extends LinearOpMode {
         telemetry.update();
         cpiOdometry  = CPR_ODOMETRY / (ODOMETRY_WHEEL_DIAMETER * Math.PI);
         //CPI =     ticksPerRev / (circumerence);
-        CPI_DRIVE_TRAIN = 537.7/ ( 4.75 * Math.PI);
+        CPI_ATV_DT = 537.7/ ( 4.75 * Math.PI);
+        CPI_OMNI_DT = 537.7/ (3.75 * Math.PI);
 
-        motorLeft  = hardwareMap.dcMotor.get("motor_0");
-        motorLeft2 = hardwareMap.dcMotor.get( "motor_2");
-        motorRight  = hardwareMap.dcMotor.get("motor_1");
-        motorRight2 = hardwareMap.dcMotor.get("motor_3");
-        motorXRail =hardwareMap.dcMotor.get("motor_5");
+         motorLeftBACK = hardwareMap.dcMotor.get("motor_0");
+        motorRightBACK = hardwareMap.dcMotor.get("motor_1");
+        motorLeftFRONT = hardwareMap.dcMotor.get( "motor_2");
+        motorRightFRONT = hardwareMap.dcMotor.get("motor_3");
         motorLift = hardwareMap.dcMotor.get("motor_4");
-        motorCollecter = hardwareMap.dcMotor.get("motor_6");
-        //servoMain = hardwareMap.servo.get("servo_2");
-        servoLeft = hardwareMap.crservo.get("servo_1");
+        motorXRail =hardwareMap.dcMotor.get("motor_5");
+        motorCollector = hardwareMap.dcMotor.get("motor_6");
         servoRight = hardwareMap.crservo.get("servo_0");
-        // vs  = this.hardwareMap.voltageSensor.iterator().next();
+        servoLeft = hardwareMap.crservo.get("servo_1");
+       // vs  = this.hardwareMap.voltageSensor.iterator().next();
         timer = new ElapsedTime();//create a timer from the elapsed time class
 
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        motorLeft.setDirection(DcMotor.Direction.REVERSE);
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
-        motorXRail.setDirection(DcMotor.Direction.REVERSE);
+        
 
-        motorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
-
-        // Wait for the game to start (driver presses PLAY)
-        telemetry.addLine("Ducks are pretty great");
-        sleep(550);
+      
+        brakeMotors();
+        reverseMotors();
         telemetry.update();
         waitForStart();
         runtime.reset();
 
-
+       
         //run autonomous
         if (opModeIsActive()) {
             motorSetModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);  //stop and reset encoders
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);       //start encoders
+            
+                
+                encoderDrive(1, 0.53, -2, 2);//STRAIGHT
+                spinDuck(-1);
+                sleep(300);
+                encoderDrive(1, 0.6 ,35, 30);//Arc To shipping Hub
+                sleep(500);
+                extendOrRetract(2);//extend or retract - is extend and + is retract// based off time do not put over 4
 
+                spitOut(-1);
+                extendOrRetract(-1);//extend or retract - is extend and + is retract// based off time do not put over 4
 
-            odometryDrive(5, -1, 0.53, -9, -5, false);//STRAIGHT
-            spinDuck(-1);
-            sleep(500);
-            odometryDrive(5,1, 0.45 , 42, 35, false);//Arc To shipping Hub
-            sleep(500);
-            extendOrRetract(2);//extend or retract - is extend and + is retract// based off time do not put over 4
-            spitOut(-1);
-            odometryDrive(5, 1, 0, 14, -4, false);////
+                encoderDrive( 0, 1,4,-11);////
+                                
+                sleep(500);
 
-            sleep(500);
-
-            odometryDrive(5, -0.5, -0.5, -45,-45, false);////
-            telemetry.update();
-            sleep(20000);
-
-
-            //odometryDrive(2, -0.37,0.37,10, 10,false);//Turn
-            telemetry.update();
-        }
-
-    }
-    public void encoderDrive(double timeOut, double auxSpeed, double leftSpeed, double rightSpeed, double mtrLeftInches,
-                             double mtrRightInches, double mtrXRail) {
-        int newLeftTarget, newRightTarget , newXRailTarget;
-        // Ensure that the opmode is still active
-        if (opModeIsActive()) {
-
-            motorSetModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);  //stop and reset encoders
-            motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);       //start encoders
-
-            // Determine new target position, and pass to motor controller
-            newLeftTarget = motorLeft.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrLeftInches);
-            newRightTarget = motorRight.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrRightInches);
-            newXRailTarget = motorXRail.getCurrentPosition() + (int) (100 * mtrXRail);
-
-            motorSetTargetPos(newLeftTarget, newRightTarget, newXRailTarget);
-
-
-            // Turn On RUN_TO_POSITION
-            motorSetModes(DcMotor.RunMode.RUN_TO_POSITION);
-
-            // reset the timeout time and start motion.
-
-            drive(Math.abs(leftSpeed),Math.abs(rightSpeed));
-            double thisTimeOut = this.time + timeOut;
-            while (opModeIsActive() && (motorLeft.isBusy() ||motorRight.isBusy())) {
-
-
-                if (this.time >= thisTimeOut) {
-                    /*
-                    relativeLayout.post(new Runnable() {
-                        public void run() {
-                            relativeLayout.setBackgroundColor(Color.YELLOW);
-                        }
-                    });
-                    */
-                    timeOutCount++;
-                    telemetry.addData("Target Left: ", newLeftTarget);
-                    telemetry.addData("Target right: ", newRightTarget);
-                    telemetry.addData("Current Pos Left:", motorLeft.getCurrentPosition());
-                    telemetry.addData("Current Pos Right:", motorRight.getCurrentPosition());
-                    //telemetry.addData("Num of cuts", timeOutCount);
-                    break;
-                }
-
-
-                // Display data for the driver.
-                telemetry.addData("GTime", (int) (this.time - gameTimeSnapShot));
-                telemetry.addData("Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
-                telemetry.addData("Path2", "Running at %7d :%7d",
-                        motorLeft.getCurrentPosition(),
-                        motorRight.getCurrentPosition());
-                telemetry.addData("L1-Tar", motorLeft.getTargetPosition() + "L1-Cur" + motorLeft.getCurrentPosition());
-                telemetry.addData("L2-Tar", motorLeft2.getTargetPosition() + "L2-Cur" + motorLeft2.getCurrentPosition());
-                telemetry.addData("R1-Tar", motorRight.getTargetPosition() + "R1-Cur" + motorRight.getCurrentPosition());
-                telemetry.addData("R2-Tar", motorRight2.getTargetPosition() + "R2-Cur" + motorRight2.getCurrentPosition());
-                telemetry.addData("Lmtr-PWR:" + motorLeft.getPower(), " Rmtr-PWR:" + motorRight.getPower());
-
-                telemetry.addData("right power: ", motorRight.getPower());
-                telemetry.addData("left power: ", motorLeft.getPower());
-
-
+                encoderDrive( 0.5, 0.5, -30,-30);////
                 telemetry.update();
-            }
+                sleep(20000);
 
-            // Stop all motion;
-            drive(0, 0);
-
-
-
-            // Turn off RUN_TO_POSITION
-            motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);
-            //motorSkystoneGrab.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            sleep(250);   // optional pause after each move in milliseconds
+                
+                //odometryDrive(2, -0.37,0.37,10, 10,false);//Turn
+                telemetry.update();
         }
-
+        
     }
-    public void odometryDrive(double timeOut, double leftDTSpeed, double rightDTSpeed, double mtrLeftInches, double mtrRightInches, boolean strafe) {
-        motorSetModes(DcMotor.RunMode.RUN_WITHOUT_ENCODERS);
-        int newLeftTarget = motorLeft.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrLeftInches);
-        int newRightTarget = motorRight.getCurrentPosition() + (int) (CPI_DRIVE_TRAIN * mtrRightInches);
-        double thisTimeOut = this.time + timeOut;
-
-
-
-        drive(leftDTSpeed, rightDTSpeed);
-        while (opModeIsActive() && !IsInRange(motorLeft.getCurrentPosition(),newLeftTarget)
-                && !IsInRange(motorRight.getCurrentPosition(),newRightTarget)) {
-            if (this.time >= thisTimeOut) {
-                break;
-            }
-
-            //telemetry.addData("Right motor: ",motorRight.getCurrentPosition() );
+   public void encoderDrive(double leftDTSpeed, double rightDTSpeed, double mtrLeftInches, double mtrRightInches) {
+        int newLeftTarget = motorLeftBACK.getCurrentPosition() + (int) (CPI_ATV_DT * mtrLeftInches);
+        int newRightTarget = motorRightBACK.getCurrentPosition() + (int) (CPI_ATV_DT * mtrRightInches);
+        drive(mtrLeftInches < 0 ? -leftDTSpeed : leftDTSpeed, mtrRightInches < 0 ? -rightDTSpeed : rightDTSpeed);
+        while (opModeIsActive() && !IsInRange(motorLeftBACK.getCurrentPosition(), newLeftTarget)
+                && !IsInRange(motorRightBACK.getCurrentPosition(), newRightTarget)) {
             telemetry.addData("Target Left: ", newLeftTarget);
             telemetry.addData("Target right: ", newRightTarget);
-            telemetry.addData("Current Pos Left:", motorLeft.getCurrentPosition());
-            telemetry.addData("Current Pos Right:", motorRight.getCurrentPosition());
+            telemetry.addData("Current Pos Left:", motorLeftBACK.getCurrentPosition());
+            telemetry.addData("Current Pos Right:", motorRightBACK.getCurrentPosition());
+            telemetry.addData("right power: ", motorRightBACK.getPower());
+            telemetry.addData("left power: ", motorLeftBACK.getPower());
             telemetry.update();
         }
-
         // Stop all motion;
         drive(0, 0);
-
-
-    }
-
-    public void drive(double left, double right) {
-        //telemetry.addData("Left/right power: ", left, right);
-        telemetry.update();
-
-        motorLeft.setPower(left);
-        motorRight.setPower(right);
-
-
-
     }
 
     public void motorSetModes(DcMotor.RunMode modeName) {
-        motorLeft.setMode(modeName);
-        motorRight.setMode(modeName);
+        motorLeftBACK.setMode(modeName);
+        motorRightBACK.setMode(modeName);
+        motorLeftFRONT.setMode(modeName);
+        motorRightFRONT.setMode(modeName);
     }
-
-    public void motorSetTargetPos(int targetLeft, int targetRight, int targetXRail) {
-        motorLeft.setTargetPosition(targetLeft);
-        motorRight.setTargetPosition(targetRight);
-        motorXRail.setTargetPosition(targetXRail);
+    public void drive(double left, double right  ) {
+            motorLeftBACK.setPower(left);
+            motorRightBACK.setPower(right);
+            motorRightFRONT.setPower(right);
+            motorLeftFRONT.setPower(left);
     }
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public void motorSetTargetPos(int targetLeft, int targetRight) {
+        motorLeftBACK.setTargetPosition(targetLeft);
+        motorRightBACK.setTargetPosition(targetRight);
+    }
+////////////////////////////////////////////////////////////////////////////////////////////////////////
     public boolean IsInRange(double inches, double target){
         final float DEAD_RANGE = 20;
         if(Math.abs(target - inches) <= DEAD_RANGE){
@@ -255,33 +159,33 @@ public class AAARedCarousel extends LinearOpMode {
         return false;
     }
     public void spitOut(double power){
-        motorCollecter.setPower(power);
+        motorCollector.setPower(power);
         sleep(1500);
-        motorCollecter.setPower(0);
-
+        motorCollector.setPower(0);
+        
     }
-    public void spinDuck(double power){//for red Carousel the value needs to be negative
+    public void spinDuck(double power){//for red Carousel the value needs to be negative 
         servoLeft.setPower(power);
         sleep(5500);
         servoLeft.setPower(0);
-
+        
     }
     public void extendOrRetract(int power){
         if (power > 0) {
-            motorXRail.setPower(0.5);//30 %
+            motorXRail.setPower(0.5);//30 % 
             sleep(power * 1000);
             motorXRail.setPower(0);
         }else if (power < 0){
-            motorXRail.setPower(-0.5);//30 %
+            motorXRail.setPower(-0.5);//30 % 
             sleep(power * -1000);
             motorXRail.setPower(0);
 
-
+            
         } else {
             power = 0;
         }
-
-
+        
+        
     }
 
     private void displayInfo(double i, Recognition recognition) {
@@ -291,6 +195,18 @@ public class AAARedCarousel extends LinearOpMode {
         telemetry.addData("width: ", recognition.getWidth() );
         telemetry.addData("height: ", recognition.getHeight() );
         telemetry.addData("H/W Ratio: ", recognition.getHeight()/recognition.getWidth() );
+    }
+    private void reverseMotors(){
+        motorLeftBACK.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftFRONT.setDirection(DcMotor.Direction.REVERSE);
+        motorXRail.setDirection(DcMotor.Direction.REVERSE);
+        
+    }
+    private void brakeMotors(){
+        motorLeftBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRightBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorXRail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        
     }
 }
 
