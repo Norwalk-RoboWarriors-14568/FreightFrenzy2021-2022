@@ -99,11 +99,13 @@ public class AAABlueCarousel extends LinearOpMode {
                 sleep(500);
                 extendOrRetract(2);//extend or retract - is extend and + is retract// based off time do not put over 4
                 spitOut(-1);
-                encoderDrive( 1, 0,-14,4);////
+                encoderDrive( 1, 0,-12,4);////
                                 
                 sleep(500);
 
                 encoderDrive( 0.5, 0.5, -30,-30);////
+                extendOrRetract(-1);//extend or retract - is extend and + is retract// based off time do not put over 4
+
                 telemetry.update();
                 sleep(20000);
 

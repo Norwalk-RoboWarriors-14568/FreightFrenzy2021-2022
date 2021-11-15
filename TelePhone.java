@@ -19,12 +19,6 @@ public class TelePhone extends LinearOpMode {
             motorRight, motorRight2, motorXRail, motorLift, motorCollecter;
     private CRServo servoLeft, servoRight, servoMain;
 
-    //private DcMotor ExtraMotor = null;
-    //private DcMotor ExtraMotor2 = null;
-    //private Servo ExtraServo = null;//Servo to push rings into Durflinger
-    //private Servo ExtraServo = null;
-    //static float SERVO_INITIAL_POS = 0.7f;
-    //static float GRABBER_INITIAL_POS = 0.0f;//wobble graber servo initial pos
     private boolean buttonG2APressedLast = false;
 
     public void drive(double left, double right){
@@ -57,10 +51,7 @@ public class TelePhone extends LinearOpMode {
         servoLeft = hardwareMap.crservo.get("servo_1");
         servoRight = hardwareMap.crservo.get("servo_0");
         
-        // ExtraMotor = hardwareMap.get(DcMotor.class, "motor_4");
-        /// ExtraMotor2 = hardwareMap.get(DcMotor.class, "motor_5");
-        // ExtraServo = hardwreMap.get(Servo.class, "servo_0");
-        // ExtraServo2 = hardwareMap.get(Servo.class, "servo_1" );
+        
         timer = new ElapsedTime();//create a timer from the elapsed time class
 
         // Most robots need the motor on one side to be reversed to drive forward
@@ -73,24 +64,13 @@ public class TelePhone extends LinearOpMode {
         motorRight2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLeft2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorXRail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //ExtraMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //ExtraMotor2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        //ExtraServo.setDirection(Servo.Direction.FORWARD);//set the servo direction
-        //ExtraServo2.setDirection(Servo.Direction.FORWARD);//set the servo direction
-
-
-
-        // Wait for the game to start (driver presses PLAY)
+        reverseMotors();
         waitForStart();
         runtime.reset();
         timer.startTime();
-        //ExtraServo.setPosition(SERVO_INITIAL_POS);
-        //ExtraServo2.setPosition(GRABBER_INITIAL_POS);
-        //intakeFrontMotor.setPosition(INTAKE_INITIAL_POS);
-
-        //double startKickTime = 9999;//the time the button was pressed to move the servo (set high so it doesn't hit)
-        // run until the end of the match (driver presses STOP)
+       
         while (opModeIsActive()) {
 
 
@@ -123,7 +103,7 @@ public class TelePhone extends LinearOpMode {
                     telemetry.update();
                       telemetry.addData("Status", "Inside While");
                      telemetry.update();
-                     motorXRail.setPower(gamepad2.left_stick_y); 
+                     motorXRail.setPower(gamepad2.right_stick_y); 
                 
             } else {
                  motorXRail.setPower(0);
@@ -133,7 +113,7 @@ public class TelePhone extends LinearOpMode {
                     telemetry.update();
                       telemetry.addData("Status", "Inside While");
                      telemetry.update();
-                     motorLift.setPower(-gamepad2.right_stick_y); 
+                     motorLift.setPower(-gamepad2.left_stick_y); 
                  
             } else {
                  motorLift.setPower(0);
@@ -147,74 +127,7 @@ public class TelePhone extends LinearOpMode {
             } else {
                 motorCollecter.setPower(0);
             }
-            
-            /*
-            if(gamepad2.y){//if b button pressed
-                startKickTime = timer.time();//start the timer so it knows when to turn around
-            }
-            if(timer.time() - startKickTime > 0.3){//if its been moving for > 0.3 seconds
-                kickerServo.setPosition(SERVO_INITIAL_POS);//reset back to zero
-                startKickTime = 99999;//set kickTime back to value that doesn't trigger this
-            }
-
-            if(gamepad2.x && !buttonG2XPressedLast){
-                if(Math.abs(wobbleServo.getPosition() - GRABBER_INITIAL_POS) < 0.01){
-                    wobbleServo.setPosition(0.52);
-                }
-                else if(Math.abs(wobbleServo.getPosition() - 0.52) < 0.01){
-                    wobbleServo.setPosition(GRABBER_INITIAL_POS);
-                }
-            }
-            buttonG2XPressedLast = gamepad2.x;
-
-            if(gamepad2.a && !buttonG2APressedLast){
-                if (motorIntakeBelt.getPower() != 0) {
-                    motorIntakeBelt.setPower(0);
-                    intakeFrontMotor.setPower(0);
-                }else{
-                    motorIntakeBelt.setPower(1);
-                    intakeFrontMotor.setPower(1);
-                }
-            }
-            buttonG2APressedLast = gamepad2.a;
-
-            if(gamepad2.dpad_right){//if holding right on dpad, reverse it
-                motorIntakeBelt.setPower(-1);
-                intakeFrontMotor.setPower(-1);
-            }
-            buttonG2APressedLast = gamepad2.a;
-
-            if(gamepad2.dpad_up){
-                wobbleMotor.setPower(-0.6);
-            }
-            else if(gamepad2.dpad_down){
-                wobbleMotor.setPower(0.6);
-            }
-            else{
-                wobbleMotor.setPower(0);
-            }
-            //Thrower code to set different speeds
-            if(gamepad2.left_bumper){
-                throwerPower = 0f;
-            }
-            else if(gamepad2.left_trigger > 0.2f){
-                throwerPower = 0.65;
-            }
-            else if(gamepad2.right_bumper){
-                throwerPower = 0.7f;
-            }
-            else if(gamepad2.right_trigger > 0.2f){
-                throwerPower = 0.8f;
-            }
-            throwerMotor.setPower(throwerPower);
-
-*/
-
-
-
-
-
-
+      
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("MotorsFront", "left (%.2f), right (%.2f)", motorLeft.getPower(), motorRight.getPower());
@@ -222,5 +135,11 @@ public class TelePhone extends LinearOpMode {
             telemetry.update();
 
         }
+        
     }
+    private void reverseMotors(){
+            motorRight.setDirection(DcMotor.Direction.REVERSE);
+            motorXRail.setDirection(DcMotor.Direction.REVERSE);
+        
+      }
 }
