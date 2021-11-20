@@ -5,6 +5,9 @@ repo:
 code:
 - '*.java'
 
+code:
+- 'AAA*.java'
+
 # Add '@domain/core' label to any change within the 'core' package
 
 # Add 'test' label to any change to *.spec.js files within the source dir
