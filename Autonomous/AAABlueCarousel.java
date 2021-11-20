@@ -22,7 +22,6 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 @Autonomous(name = "Blue Car")
 public class AAABlueCarousel extends LinearOpMode {
     // Declare OpMode members.
-    //Test
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motorLeftBACK = null;
     private DcMotor motorRightBACK = null;
