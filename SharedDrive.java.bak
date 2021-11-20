@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.OfficalGitHub;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-//edit
+
 public class SharedDrive {
     private TelemetryDisplay _telemetryDisplay;
     private Motors _motors;
@@ -38,7 +38,6 @@ public class SharedDrive {
         }
         return false;
     }
-//THkso ea test
 
 
     private void drive(double left, double right  ) {
