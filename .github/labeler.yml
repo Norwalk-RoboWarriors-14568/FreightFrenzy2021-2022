@@ -5,7 +5,7 @@ repo:
 code:
 - '*.java'
 
-code:
+Autonumous:
 - 'AAA*.java'
 
 # Add '@domain/core' label to any change within the 'core' package
