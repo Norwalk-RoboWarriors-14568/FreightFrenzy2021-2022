@@ -17,7 +17,7 @@ import java.util.List;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-
+import org.firstinspires.ftc.teamcode.OfficalGitHub.DynamicVoltage;
 
 
 @Autonomous(name = "Red Car")
@@ -36,11 +36,9 @@ public class AAARedCarousel extends LinearOpMode {
     private CRServo servoLeft, servoRight;
     private double CPI_ATV_DT, CPI_OMNI_DT;
    // private Servo servomain;
-
     //private boolean buttonG2APressest = false;
     //private boolean buttonG2XPressedLast = false;
     private ElapsedTime timer;
-
 
     private final int CPR_ODOMETRY = 8192;//counts per revolution for encoder, from website
     private final int ODOMETRY_WHEEL_DIAMETER = 4;
