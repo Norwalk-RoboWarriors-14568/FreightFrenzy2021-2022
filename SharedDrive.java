@@ -38,8 +38,9 @@ public class SharedDrive {
         }
         return false;
     }
+//THkso ea test
 
-//This a test
+
     private void drive(double left, double right  ) {
         _motors.backLeft.setPower(left);
         _motors.backRight.setPower(right);
