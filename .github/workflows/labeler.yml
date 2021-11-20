@@ -6,14 +6,7 @@
 # https://github.com/actions/labeler
 
 name: "Pull Request Labeler"
-on:
-  push:
-    branches:
-    - main
-  pull_request:
-    branches:
-    - main
-
+on: [push, pull_request]
     
 
 
