@@ -30,6 +30,8 @@
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
@@ -49,25 +51,25 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-
+@Autonomous(name = "tection Webcam")
 public class Vuforia9 extends LinearOpMode {
-  /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
-   * the following 4 detectable objects
-   *  0: Ball,
-   *  1: Cube,
-   *  2: Duck,
-   *  3: Marker (duck location tape marker)
-   *
-   *  Two additional model assets are available which only contain a subset of the objects:
-   *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
-   *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
-   */
+    /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
+     * the following 4 detectable objects
+     *  0: Ball,
+     *  1: Cube,
+     *  2: Duck,
+     *  3: Marker (duck location tape marker)
+     *
+     *  Two additional model assets are available which only contain a subset of the objects:
+     *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
+     *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
+     */
     private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
     private static final String[] LABELS = {
-      "Ball",
-      "Cube",
-      "Duck",
-      "Marker"
+            "Ball",
+            "Cube",
+            "Duck",
+            "Marker"
     };
 
     /*
@@ -97,7 +99,7 @@ public class Vuforia9 extends LinearOpMode {
      * Detection engine.
      */
     private TFObjectDetector tfod;
-    
+
     @Override
     public void runOpMode() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -133,36 +135,36 @@ public class Vuforia9 extends LinearOpMode {
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
-                      telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
 
-                      // step through the list of recognitions and display boundary info.
-                      int i = 0;
-                      for (Recognition recognition : updatedRecognitions) {
-                        telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                        telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                          recognition.getLeft(), recognition.getTop());
-                        telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                recognition.getRight(), recognition.getBottom());
-                             
-                       if (((recognition.getRight() == 150f) && (recognition.getBottom() == 100f)) && ((recognition.getLeft() == 150f) && (recognition.getTop() == 100f))){
-                            duckPos = 1;
-                        }else if (((recognition.getRight() == 150f) && (recognition.getBottom() == 100f)) && ((recognition.getLeft() == 150f) && (recognition.getTop() == 100f))){
-                            duckPos = 2;
-                        }else{
-                            duckPos = 3;
+                        // step through the list of recognitions and display boundary info.
+                        int i = 0;
+                        for (Recognition recognition : updatedRecognitions) {
+                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                    recognition.getLeft(), recognition.getTop());
+                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                    recognition.getRight(), recognition.getBottom());
+
+                            if (((recognition.getRight() == 150f) && (recognition.getBottom() == 100f)) && ((recognition.getLeft() == 150f) && (recognition.getTop() == 100f))){
+                                duckPos = 1;
+                            }else if (((recognition.getRight() == 150f) && (recognition.getBottom() == 100f)) && ((recognition.getLeft() == 150f) && (recognition.getTop() == 100f))){
+                                duckPos = 2;
+                            }else{
+                                duckPos = 3;
+                            }
+                            telemetry.addData("Duck Pos: ", duckPos);
+
+                            i++;
                         }
-                        telemetry.addData("Duck Pos: ", duckPos);
-
-                        i++;
-                      }
-                      telemetry.update();
+                        telemetry.update();
                     }
                 }
             }
         }
     }
-    
-    
+
+
     public int duckPos(){
         return duckPos;
     }
@@ -178,8 +180,7 @@ public class Vuforia9 extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.BACK;
-
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
@@ -191,7 +192,7 @@ public class Vuforia9 extends LinearOpMode {
      */
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-            "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfodParameters.minResultConfidence = 0.85f;
         tfodParameters.isModelTensorFlow2 = true;
