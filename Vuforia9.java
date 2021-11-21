@@ -97,7 +97,7 @@ public class Vuforia9 extends LinearOpMode {
      * Detection engine.
      */
     private TFObjectDetector tfod;
-
+    
     @Override
     public void runOpMode() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -166,6 +166,7 @@ public class Vuforia9 extends LinearOpMode {
     public int duckPos(){
         return duckPos;
     }
+
 
     /**
      * Initialize the Vuforia localization engine.
