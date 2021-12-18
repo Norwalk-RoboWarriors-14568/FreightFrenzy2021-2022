@@ -37,9 +37,9 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@TeleOp(name = "OpenCvMarker")
+@TeleOp(name = "OpenCvBlue")
 
-public class OpenCvMarker extends LinearOpMode
+public class OpenCvBlue extends LinearOpMode
 {
     OpenCvWebcam webcam;
     SamplePipeline pipeline;
@@ -205,9 +205,11 @@ public class OpenCvMarker extends LinearOpMode
 
 
         int avg1, avg2, avg3;
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(40,340);
-        static final int REGION_WIDTH = 400;
-        static final int REGION_HEIGHT = 100;
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0,250);
+        static final int REGION_WIDTH = 550;
+        static final int REGION_HEIGHT = 210;
+        static final int REGION_WIDTH2 = 180;
+        static final int REGION_HEIGHT2 = 210;
 
         void inputToCb(Mat input)
         {
@@ -216,8 +218,9 @@ public class OpenCvMarker extends LinearOpMode
 
 
         }
-        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(440,340);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(840,340);
+
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(550,250);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(730,250);
 
         Point region1_pointA = new Point(
                 REGION1_TOPLEFT_ANCHOR_POINT.x,
@@ -229,8 +232,8 @@ public class OpenCvMarker extends LinearOpMode
                 REGION2_TOPLEFT_ANCHOR_POINT.x,
                 REGION2_TOPLEFT_ANCHOR_POINT.y);
         Point region2_pointB = new Point(
-                REGION2_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-                REGION2_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+                REGION2_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH2,
+                REGION2_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT2);
         Point region3_pointA = new Point(
                 REGION3_TOPLEFT_ANCHOR_POINT.x,
                 REGION3_TOPLEFT_ANCHOR_POINT.y);
@@ -283,8 +286,8 @@ public class OpenCvMarker extends LinearOpMode
                     BLUE, // The color the rectangle is drawn in
                     20); // Thickness of the rectangle lines
 
-            int maxOneTwo = Math.min(avg1, avg2);
-            int max = Math.min(maxOneTwo, avg3);
+            int maxOneTwo = Math.max(avg1, avg2);
+            int max = Math.max(maxOneTwo, avg3);
 
             if(max == avg1) // Was it from region 1?
             {
