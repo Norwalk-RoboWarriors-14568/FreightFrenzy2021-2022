@@ -16,8 +16,8 @@ public class TelePhone extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motorLeft, motorLeft2,
-            motorRight, motorRight2, motorXRail, motorLift, motorCollecter;
-    private CRServo servoLeft, servoRight, servoMain;
+            motorRight, motorRight2, motorXRail, motorLift, motorCollecter, motorLeftDuck, motorRightDuck;
+   // private CRServo servoLeft, servoRight, servoMain;
 
     private boolean buttonG2APressedLast = false;
 
@@ -47,9 +47,11 @@ public class TelePhone extends LinearOpMode {
         motorXRail =hardwareMap.dcMotor.get("motor_5");
         motorLift = hardwareMap.dcMotor.get("motor_4");
         motorCollecter = hardwareMap.dcMotor.get("motor_6");
+        motorLeftDuck = hardwareMap.dcMotor.get("motor_7");
+        motorRightDuck = hardwareMap.dcMotor.get("motor_8");
         //servoMain = hardwareMap.servo.get("servo_2");
-        servoLeft = hardwareMap.crservo.get("servo_1");
-        servoRight = hardwareMap.crservo.get("servo_0");
+        //servoLeft = hardwareMap.crservo.get("servo_1");
+        //servoRight = hardwareMap.crservo.get("servo_0");
         
         
         timer = new ElapsedTime();//create a timer from the elapsed time class
@@ -86,16 +88,16 @@ public class TelePhone extends LinearOpMode {
             }
             //Servo Control
             if(gamepad2.left_bumper){
-                    servoLeft.setPower(1);
-                    servoRight.setPower(1);
+                    motorLeftDuck.setPower(1);
+                    motorRightDuck.setPower(1);
                 
             } else if (gamepad2.right_bumper){
-                    servoLeft.setPower(-1);
-                    servoRight.setPower(-1);
+                    motorLeftDuck.setPower(-1);
+                    motorRightDuck.setPower(-1);
                 
             } else {
-                servoLeft.setPower(0);
-                servoRight.setPower(0);
+                motorLeftDuck.setPower(0);
+                motorRightDuck.setPower(0);
             }
 
             if (gamepad2.right_stick_y >=  0.2|| gamepad2.right_stick_y <= -0.2){

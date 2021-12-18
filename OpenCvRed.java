@@ -37,8 +37,9 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 
-@TeleOp
-public class OpenCvDiagonal extends LinearOpMode
+@TeleOp(name = "OpenCvRed")
+
+public class OpenCvRed extends LinearOpMode
 {
     OpenCvWebcam webcam;
     SamplePipeline pipeline;
@@ -99,7 +100,7 @@ public class OpenCvDiagonal extends LinearOpMode
                  * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
                  * away from the user.
                  */
-                webcam.startStreaming(1280, 960, OpenCvCameraRotation.UPRIGHT);
+                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -200,23 +201,26 @@ public class OpenCvDiagonal extends LinearOpMode
         }
         Mat region1_Cb, region2_Cb, region3_Cb;
         Mat YCrCb = new Mat();
-        Mat Cb = new Mat();
+        Mat Cr = new Mat();
 
 
         int avg1, avg2, avg3;
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(120,340);
-        static final int REGION_WIDTH = 100;
-        static final int REGION_HEIGHT = 100;
+        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0,250);
+        static final int REGION_WIDTH = 550;
+        static final int REGION_HEIGHT = 210;
+        static final int REGION_WIDTH2 = 180;
+        static final int REGION_HEIGHT2 = 210;
 
         void inputToCb(Mat input)
         {
             Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
-            Core.extractChannel(YCrCb, Cb, 2);
+            Core.extractChannel(YCrCb, Cr, 2);
 
 
         }
-        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(630,340);
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(1179,340);
+
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(550,250);
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(730,250);
 
         Point region1_pointA = new Point(
                 REGION1_TOPLEFT_ANCHOR_POINT.x,
@@ -228,8 +232,8 @@ public class OpenCvDiagonal extends LinearOpMode
                 REGION2_TOPLEFT_ANCHOR_POINT.x,
                 REGION2_TOPLEFT_ANCHOR_POINT.y);
         Point region2_pointB = new Point(
-                REGION2_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-                REGION2_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+                REGION2_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH2,
+                REGION2_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT2);
         Point region3_pointA = new Point(
                 REGION3_TOPLEFT_ANCHOR_POINT.x,
                 REGION3_TOPLEFT_ANCHOR_POINT.y);
@@ -243,9 +247,9 @@ public class OpenCvDiagonal extends LinearOpMode
         public void init(Mat firstFrame)
         {
             inputToCb(firstFrame);
-            region1_Cb = Cb.submat(new Rect(region1_pointA, region1_pointB));
-            region2_Cb = Cb.submat(new Rect(region2_pointA, region2_pointB));
-            region3_Cb = Cb.submat(new Rect(region3_pointA, region3_pointB));
+            region1_Cb = Cr.submat(new Rect(region1_pointA, region1_pointB));
+            region2_Cb = Cr.submat(new Rect(region2_pointA, region2_pointB));
+            region3_Cb = Cr.submat(new Rect(region3_pointA, region3_pointB));
 
         }
         @Override
@@ -264,7 +268,7 @@ public class OpenCvDiagonal extends LinearOpMode
                     region1_pointA, // First point which defines the rectangle
                     region1_pointB, // Second point which defines the rectangle
                     BLUE, // The color the rectangle is drawn in
-                    2); // Thickness of the rectangle lines
+                    20); // Thickness of the rectangle lines
 
 
             Imgproc.rectangle(
@@ -272,7 +276,7 @@ public class OpenCvDiagonal extends LinearOpMode
                     region2_pointA, // First point which defines the rectangle
                     region2_pointB, // Second point which defines the rectangle
                     BLUE, // The color the rectangle is drawn in
-                    2); // Thickness of the rectangle lines
+                    20); // Thickness of the rectangle lines
 
 
             Imgproc.rectangle(
@@ -280,7 +284,7 @@ public class OpenCvDiagonal extends LinearOpMode
                     region3_pointA, // First point which defines the rectangle
                     region3_pointB, // Second point which defines the rectangle
                     BLUE, // The color the rectangle is drawn in
-                    2); // Thickness of the rectangle lines
+                    20); // Thickness of the rectangle lines
 
             int maxOneTwo = Math.min(avg1, avg2);
             int max = Math.min(maxOneTwo, avg3);
