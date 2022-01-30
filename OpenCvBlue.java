@@ -19,6 +19,7 @@
  * SOFTWARE.
  */
 
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -36,16 +37,28 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 @TeleOp(name = "OpenCvBlue")
 
-public class OpenCvBlue extends LinearOpMode
+public class OpenCvBlue //extends LinearOpMode
 {
+    public enum OpenCvBlue{
+        public enum SkystonePosition{
+            SUPERLEFT,
+            LEFT,
+            CENTER,
+            RIGHT,
+            SUPERRIGHT
+        }
+    }
     OpenCvWebcam webcam;
     SamplePipeline pipeline;
-    @Override
-    public void runOpMode()
-    {
+    Telemetry telemetry;
+   // @Override
+    public void readyBlue(HardwareMap hardwareMap, Telemetry telemetryIn) {
+        telemetry = telemetryIn;
         /*
          * Instantiate an OpenCvCamera object for the camera we'll be using.
          * In this sample, we're using a webcam. Note that you will need to
@@ -79,11 +92,9 @@ public class OpenCvBlue extends LinearOpMode
          * If you really want to open synchronously, the old method is still available.
          */
         webcam.setMillisecondsPermissionTimeout(2500); // Timeout for obtaining permission is configurable. Set before opening.
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
-            public void onOpened()
-            {
+            public void onOpened() {
                 /*
                  * Tell the webcam to start streaming images to us! Note that you must make sure
                  * the resolution you specify is supported by the camera. If it is not, an exception
@@ -104,8 +115,7 @@ public class OpenCvBlue extends LinearOpMode
             }
 
             @Override
-            public void onError(int errorCode)
-            {
+            public void onError(int errorCode) {
                 /*
                  * This will be called if the camera could not be opened
                  */
@@ -118,10 +128,12 @@ public class OpenCvBlue extends LinearOpMode
         /*
          * Wait for the user to press start on the Driver Station
          */
-        waitForStart();
+        // waitForStart();
+    }
+        //while (opModeIsActive())
+        //{
+    public void runWhileActive(){
 
-        while (opModeIsActive())
-        {
             /*
              * Send some stats to the telemetry
              */
@@ -134,7 +146,6 @@ public class OpenCvBlue extends LinearOpMode
             telemetry.addData("Analysis", pipeline.getAnalysis());
             telemetry.addData("Max", pipeline.getMax());
             telemetry.update();
-            sleep(50);
 
             /*
              * NOTE: stopping the stream from the camera early (before the end of the OpMode
@@ -193,12 +204,7 @@ public class OpenCvBlue extends LinearOpMode
     public static class SamplePipeline extends OpenCvPipeline
     {   static final Scalar BLUE = new Scalar(0, 0, 255);
         static final Scalar GREEN = new Scalar(0, 255, 0);
-        public enum SkystonePosition
-        {
-            LEFT,
-            CENTER,
-            RIGHT
-        }
+
         Mat region1_Cb, region2_Cb, region3_Cb;
         Mat YCrCb = new Mat();
         Mat Cb = new Mat();

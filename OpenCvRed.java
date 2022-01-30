@@ -19,7 +19,7 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode;
+package Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -36,16 +36,31 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
-@TeleOp(name = "OpenCvRed")
+//@TeleOp(name = "OpenCvRed")
 
-public class OpenCvRed extends LinearOpMode
+public class OpenCvRed //extends LinearOpMode
 {
+    public enum SkystonePosition
+    {
+        SUPERLEFT,
+        LEFT,
+        CENTER,
+        RIGHT,
+        SUPERRIGHT
+    }
     OpenCvWebcam webcam;
     SamplePipeline pipeline;
-    @Override
-    public void runOpMode()
+    Telemetry telemetry;
+    //LinearOpMode linearOpMode;
+
+    //@Override
+    public void readyRed(HardwareMap hardwareMap, Telemetry telemetryIn)
     {
+        telemetry = telemetryIn;
         /*
          * Instantiate an OpenCvCamera object for the camera we'll be using.
          * In this sample, we're using a webcam. Note that you will need to
@@ -58,7 +73,7 @@ public class OpenCvRed extends LinearOpMode
          */
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-
+        //webcam = OpenCvCameraFactory.getInstance().createWebcam(webcam, cameraMonitorViewId);
         // OR...  Do Not Activate the Camera Monitor View
         //webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"));
 
@@ -118,61 +133,74 @@ public class OpenCvRed extends LinearOpMode
         /*
          * Wait for the user to press start on the Driver Station
          */
-        waitForStart();
+        //waitForStart();
 
-        while (opModeIsActive())
-        {
-            /*
-             * Send some stats to the telemetry
-             */
-            telemetry.addData("Frame Count", webcam.getFrameCount());
-            telemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
-            telemetry.addData("Total frame time ms", webcam.getTotalFrameTimeMs());
-            telemetry.addData("Pipeline time ms", webcam.getPipelineTimeMs());
-            telemetry.addData("Overhead time ms", webcam.getOverheadTimeMs());
-            telemetry.addData("Theoretical max FPS", webcam.getCurrentPipelineMaxFps());
-            telemetry.addData("Analysis", pipeline.getAnalysis());
-            telemetry.addData("Max", pipeline.getMax());
-            telemetry.update();
-            sleep(50);
+        //while (opModeIsActive())
+        //{
 
-            /*
-             * NOTE: stopping the stream from the camera early (before the end of the OpMode
-             * when it will be automatically stopped for you) *IS* supported. The "if" statement
-             * below will stop streaming from the camera when the "A" button on gamepad 1 is pressed.
-             */
-            if(gamepad1.a)
-            {
-                /*
-                 * IMPORTANT NOTE: calling stopStreaming() will indeed stop the stream of images
-                 * from the camera (and, by extension, stop calling your vision pipeline). HOWEVER,
-                 * if the reason you wish to stop the stream early is to switch use of the camera
-                 * over to, say, Vuforia or TFOD, you will also need to call closeCameraDevice()
-                 * (commented out below), because according to the Android Camera API documentation:
-                 *         "Your application should only have one Camera object active at a time for
-                 *          a particular hardware camera."
-                 *
-                 * NB: calling closeCameraDevice() will internally call stopStreaming() if applicable,
-                 * but it doesn't hurt to call it anyway, if for no other reason than clarity.
-                 *
-                 * NB2: if you are stopping the camera stream to simply save some processing power
-                 * (or battery power) for a short while when you do not need your vision pipeline,
-                 * it is recommended to NOT call closeCameraDevice() as you will then need to re-open
-                 * it the next time you wish to activate your vision pipeline, which can take a bit of
-                 * time. Of course, this comment is irrelevant in light of the use case described in
-                 * the above "important note".
-                 */
-                webcam.stopStreaming();
-                //webcam.closeCameraDevice();
-            }
+        //}
 
-            /*
-             * For the purposes of this sample, throttle ourselves to 10Hz loop to avoid burning
-             * excess CPU cycles for no reason. (By default, telemetry is only sent to the DS at 4Hz
-             * anyway). Of course in a real OpMode you will likely not want to do this.
-             */
-            sleep(100);
-        }
+    }
+
+    public int analysis()
+    {
+        return pipeline.getAnalysis().ordinal();
+    }
+
+    public void runWhileActive()
+    {
+        /*
+         * Send some stats to the telemetry
+         */
+
+        telemetry.addData("Frame Count", webcam.getFrameCount());
+        telemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
+        telemetry.addData("Total frame time ms", webcam.getTotalFrameTimeMs());
+        telemetry.addData("Pipeline time ms", webcam.getPipelineTimeMs());
+        telemetry.addData("Overhead time ms", webcam.getOverheadTimeMs());
+        telemetry.addData("Theoretical max FPS", webcam.getCurrentPipelineMaxFps());
+        telemetry.addData("Analysis", pipeline.getAnalysis());
+        telemetry.addData("Max", pipeline.getMax());
+        telemetry.update();
+        //linearOpMode.sleep(50);
+
+        /*
+         * NOTE: stopping the stream from the camera early (before the end of the OpMode
+         * when it will be automatically stopped for you) *IS* supported. The "if" statement
+         * below will stop streaming from the camera when the "A" button on gamepad 1 is pressed.
+         */
+        //if(gamepad1.a)
+        //{
+        /*
+         * IMPORTANT NOTE: calling stopStreaming() will indeed stop the stream of images
+         * from the camera (and, by extension, stop calling your vision pipeline). HOWEVER,
+         * if the reason you wish to stop the stream early is to switch use of the camera
+         * over to, say, Vuforia or TFOD, you will also need to call closeCameraDevice()
+         * (commented out below), because according to the Android Camera API documentation:
+         *         "Your application should only have one Camera object active at a time for
+         *          a particular hardware camera."
+         *
+         * NB: calling closeCameraDevice() will internally call stopStreaming() if applicable,
+         * but it doesn't hurt to call it anyway, if for no other reason than clarity.
+         *
+         * NB2: if you are stopping the camera stream to simply save some processing power
+         * (or battery power) for a short while when you do not need your vision pipeline,
+         * it is recommended to NOT call closeCameraDevice() as you will then need to re-open
+         * it the next time you wish to activate your vision pipeline, which can take a bit of
+         * time. Of course, this comment is irrelevant in light of the use case described in
+         * the above "important note".
+         */
+        //    webcam.stopStreaming();
+        //webcam.closeCameraDevice();
+        //}
+
+
+        /*
+         * For the purposes of this sample, throttle ourselves to 10Hz loop to avoid burning
+         * excess CPU cycles for no reason. (By default, telemetry is only sent to the DS at 4Hz
+         * anyway). Of course in a real OpMode you will likely not want to do this.
+         */
+        //linearOpMode.sleep(100);
     }
 
     /*
@@ -193,14 +221,8 @@ public class OpenCvRed extends LinearOpMode
     public static class SamplePipeline extends OpenCvPipeline
     {   static final Scalar BLUE = new Scalar(0, 0, 255);
         static final Scalar GREEN = new Scalar(0, 255, 0);
-        public enum SkystonePosition
-        {
-            SUPERLEFT,
-            LEFT,
-            CENTER,
-            RIGHT,
-            SUPERRIGHT
-        }
+        static final Scalar RED = new Scalar(255, 0, 0);
+
         Mat region1_Cb, region2_Cb, region3_Cb,region4_Cb,region5_Cb;
         Mat YCrCb = new Mat();
         Mat Cr = new Mat();
@@ -210,11 +232,20 @@ public class OpenCvRed extends LinearOpMode
         static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0,250);
         static final int REGION_WIDTH = 250;
         static final int REGION_HEIGHT = 210;
+        /*  IF BLUE
+        void inputToCb(Mat input)
+                {
+                    Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
+                    Core.extractChannel(YCrCb, Cr, 2);
 
+
+                }
+
+        */
         void inputToCb(Mat input)
         {
-            Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
-            Core.extractChannel(YCrCb, Cr, 2);
+             = Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
+            Core.extractChannel(YCrCb, Cr, 1);
 
 
         }
@@ -241,7 +272,7 @@ public class OpenCvRed extends LinearOpMode
                 REGION3_TOPLEFT_ANCHOR_POINT.x,
                 REGION3_TOPLEFT_ANCHOR_POINT.y);
         Point region3_pointB = new Point(
-                REGION3_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+                REGION3_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH/6,
                 REGION3_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
         Point region4_pointA = new Point(
                 REGION4_TOPLEFT_ANCHOR_POINT.x,
@@ -286,38 +317,38 @@ public class OpenCvRed extends LinearOpMode
                     input, // Buffer to draw on
                     region1_pointA, // First point which defines the rectangle
                     region1_pointB, // Second point which defines the rectangle
-                    BLUE, // The color the rectangle is drawn in
+                    RED, // The color the rectangle is drawn in
                     20); // Thickness of the rectangle lines
             Imgproc.rectangle(
                     input, // Buffer to draw on
                     region2_pointA, // First point which defines the rectangle
                     region2_pointB, // Second point which defines the rectangle
-                    BLUE, // The color the rectangle is drawn in
+                    RED, // The color the rectangle is drawn in
                     20); // Thickness of the rectangle lines
             Imgproc.rectangle(
                     input, // Buffer to draw on
                     region3_pointA, // First point which defines the rectangle
                     region3_pointB, // Second point which defines the rectangle
-                    BLUE, // The color the rectangle is drawn in
+                    RED, // The color the rectangle is drawn in
                     20); // Thickness of the rectangle lines
             Imgproc.rectangle(
                     input, // Buffer to draw on
                     region4_pointA, // First point which defines the rectangle
                     region4_pointB, // Second point which defines the rectangle
-                    BLUE, // The color the rectangle is drawn in
+                    RED, // The color the rectangle is drawn in
                     20); // Thickness of the rectangle lines
             Imgproc.rectangle(
                     input, // Buffer to draw on
                     region5_pointA, // First point which defines the rectangle
                     region5_pointB, // Second point which defines the rectangle
-                    BLUE, // The color the rectangle is drawn in
+                    RED, // The color the rectangle is drawn in
                     20); // Thickness of the rectangle lines
 
 
-            int maxOneTwo = Math.min(avg1, avg2);
-            int maxTwoThree = Math.min(maxOneTwo, avg3);
-            int maxThreeFour = Math.min(maxTwoThree, avg4);
-            int max = Math.min(maxThreeFour, avg5);
+            int maxOneTwo = Math.max(avg1, avg2);
+            int maxTwoThree = Math.max(maxOneTwo, avg3);
+            int maxThreeFour = Math.max(maxTwoThree, avg4);
+            int max = Math.max(maxThreeFour, avg5);
 
             if(max == avg1) // Was it from region 1?
             {

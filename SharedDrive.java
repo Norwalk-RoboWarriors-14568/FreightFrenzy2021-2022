@@ -1,17 +1,16 @@
 package org.firstinspires.ftc.teamcode.OfficalGitHub;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-//edit
+
 public class SharedDrive {
     private TelemetryDisplay _telemetryDisplay;
     private Motors _motors;
     private double _CPI_ATV_DT;
-    private DynamicVoltage _vs;
-    public SharedDrive(TelemetryDisplay telemetryDisplay, Motors motors, double CPI_ATV_DT, DynamicVoltage vs) {
+
+    public SharedDrive(TelemetryDisplay telemetryDisplay, Motors motors, double CPI_ATV_DT) {
         _telemetryDisplay = telemetryDisplay;
         _motors = motors;
         _CPI_ATV_DT = CPI_ATV_DT;
-        _vs = vs;
     }
 
     public void odometryDrive( double leftDTSpeed, double rightDTSpeed, double mtrLeftInches, double mtrRightInches) {
@@ -39,14 +38,13 @@ public class SharedDrive {
         }
         return false;
     }
-//THkso ea test
-//Test
+
 
     private void drive(double left, double right  ) {
-        _motors.backLeft.setPower(_vs.setVoltage(left));
-        _motors.backRight.setPower(_vs.setVoltage(right));
-        _motors.frontRight.setPower(_vs.setVoltage(right));
-        _motors.frontRight.setPower(_vs.setVoltage(left));
+        _motors.backLeft.setPower(left);
+        _motors.backRight.setPower(right);
+        _motors.frontRight.setPower(right);
+        _motors.frontRight.setPower(left);
     }
 
 }
