@@ -4,3 +4,6 @@
  
  THIS is the freigth frenzy code for codeimng reaosns lbecsusde i love code jso musc  yoesyeys yesye sye sye sye yse yseay syes eys yesye ysyes yes ye
  okay I m seriius sj so serioous anuwasd o; ao tjhanlo so 
+
+
+U NEED EASY OPEN CV OR ELSE NO WORK 
