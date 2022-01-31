@@ -27,11 +27,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.List;
@@ -41,32 +39,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
-/* THIS IS GARBAGEN SHIT THATH IS A TESTIMIT TO GARBAGE AND M+VERY BAD ABND ASUS AN DVERY SUS 
-!
-!
-!
-!
-!
-!
-!
-!
-! !
-!
-!
-!!!!!!!!!!
-!!
-!!!
-!!
-!!
-!!!!
-!!
-!!
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-^^^^^^^^^^^^^^^^^LOOK UP 
-LOOK UP*/
-//@Autonomous(name = "tection Webcam")
-public class Vuforia9 extends LinearOpMode {
+/**
+ * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to
+ * determine the position of the Freight Frenzy game elements.
+ *
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
+ *
+ * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+ * is explained below.
+ */
+//@TeleOp(name = "Custom t", group = "Concept")
+//@Disabled
+public class CustyomT extends LinearOpMode {
   /* Note: This sample uses the all-objects Tensor Flow model (FreightFrenzy_BCDM.tflite), which contains
    * the following 4 detectable objects
    *  0: Ball,
@@ -78,13 +63,9 @@ public class Vuforia9 extends LinearOpMode {
    *  FreightFrenzy_BC.tflite  0: Ball,  1: Cube
    *  FreightFrenzy_DM.tflite  0: Duck,  1: Marker
    */
-    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
-    private static final String[] LABELS = {
-      "Ball",
-      "Cube",
-      "Duck",
-      "Marker"
-    };
+    private static final String TFOD_MODEL_ASSET = "/sdcard/FIRST/tflitemodels/Skystone.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Stone";
+    private static final String LABEL_SECOND_ELEMENT = "Skystone";
 
     /*
      * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
@@ -106,26 +87,19 @@ public class Vuforia9 extends LinearOpMode {
      * localization engine.
      */
     private VuforiaLocalizer vuforia;
-    private int duckPos;
 
     /**
      * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
      * Detection engine.
      */
     private TFObjectDetector tfod;
-    
+
     @Override
     public void runOpMode() {
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
         // first.
-        telemetry.addLine("Sup");
-        telemetry.update();
-
         initVuforia();
         initTfod();
-        telemetry.addLine("Supa");
-        telemetry.update();
-
 
         /**
          * Activate TensorFlow Object Detection before we wait for the start command.
@@ -165,16 +139,6 @@ public class Vuforia9 extends LinearOpMode {
                                           recognition.getLeft(), recognition.getTop());
                         telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
                                 recognition.getRight(), recognition.getBottom());
-                             
-                       if (((recognition.getRight() == 150f) && (recognition.getBottom() == 100f)) && ((recognition.getLeft() == 150f) && (recognition.getTop() == 100f))){
-                            duckPos = 1;
-                        }else if (((recognition.getRight() == 150f) && (recognition.getBottom() == 100f)) && ((recognition.getLeft() == 150f) && (recognition.getTop() == 100f))){
-                            duckPos = 2;
-                        }else{
-                            duckPos = 3;
-                        }
-                        telemetry.addData("Duck Pos: ", duckPos);
-
                         i++;
                       }
                       telemetry.update();
@@ -183,12 +147,6 @@ public class Vuforia9 extends LinearOpMode {
             }
         }
     }
-    
-    
-    public int duckPos(){
-        return duckPos;
-    }
-
 
     /**
      * Initialize the Vuforia localization engine.
@@ -200,7 +158,8 @@ public class Vuforia9 extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraDirection = CameraDirection.BACK;
+
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
@@ -214,10 +173,10 @@ public class Vuforia9 extends LinearOpMode {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
             "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.85f;
+        tfodParameters.minResultConfidence = 0.8f;
         tfodParameters.isModelTensorFlow2 = true;
-        tfodParameters.inputSize = 320;//SUS
+        tfodParameters.inputSize = 320;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+        tfod.loadModelFromFile(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
 }

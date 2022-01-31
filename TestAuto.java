@@ -6,17 +6,10 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-
-import java.util.List;
 
 
-
-@Autonomous(name = "REDHUBEXPERIMENTAL")
+//@Autonomous(name = "REDHUBEXPERIMENTAL")
 
 public class TestAuto extends LinearOpMode {
     // Declare OpMode members.
@@ -40,55 +33,6 @@ public class TestAuto extends LinearOpMode {
     private int timeOutCount = 0;
     // private VoltageSensor vs;
     private double gameTimeSnapShot = 0;
-    private static final String TFOD_MODEL_ASSET = "FreightFrenzy_BCDM.tflite";
-    private static final String[] LABELS = {
-            "Ball",
-            "Cube",
-            "Duck",
-            "Marker"
-    };
-    private static final String VUFORIA_KEY =
-            "AdcZFGT/////AAABmT3q5EQjdk7Ag9IJcmQ60aN2He5OU/tPL4gsdkLFiKFznSCBXSxXpTDRCHgv+MfLh3XS1EgvW60WoX9bf5Kl5Fj/bYFyT88Z7WmzaBInDVGUzFqikyPWV1ZLEQEfx6/RwqGDmVVwm2goANPGGv2+jhoTca7IeS8fA+yxE+3ZBkRbSGn7P4R48hfwbCdu3P2QRF2HlV1N+srcKg2xYrlMD1bfQWYbMoOZMw29PMcLAtgMfaGD02Q0Jfq48fDALzY3YFtFp7mMBRORlHg8qXzC7wYRDnzV8+hJBg2lTbZTE8RcDjf8zRtGrHJuQAM1BhvoArsWJ2pdVX4GARshChsp5E9t4daJoXIwSLJSWQ1R1q+e";
-    private VuforiaLocalizer vuforia;
-    private int duckPos;
-    private TFObjectDetector tfod;
-
-    public int duckPos(){
-        return duckPos;
-    }
-
-
-    /**
-     * Initialize the Vuforia localization engine.
-     */
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
-    }
-
-    /**
-     * Initialize the TensorFlow Object Detection engine.
-     */
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.85f;
-        tfodParameters.isModelTensorFlow2 = true;
-        tfodParameters.inputSize = 320;//SUS
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
-    }
-
 
     @Override
     public void runOpMode() {
@@ -108,54 +52,11 @@ public class TestAuto extends LinearOpMode {
         servoLeft = hardwareMap.crservo.get("servo_1");
         //servoMain = hardwareMap.servo.get("servo_2");
         timer = new ElapsedTime();//create a timer from the elapsed time class
-        initVuforia();
-        initTfod();
-        if (tfod != null) {
-            tfod.activate();
-            tfod.setZoom(2.5, 16.0/9.0);
-        }
 
-        /** Wait for the game to begin */
-        telemetry.addData(">", "Press Play to start op mode");
-        telemetry.update();
-        waitForStart();
+        // Most robots need the motor on one side to be reversed to drive forward
+        // Reverse the motor that runs backwards when connected directly to the battery
 
-        if (opModeIsActive()) {
-            while (opModeIsActive()) {
-                if (tfod != null) {
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
-
-                        // step through the list of recognitions and display boundary info.
-                        int i = 0;
-                        for (Recognition recognition : updatedRecognitions) {
-                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
-                                    recognition.getLeft(), recognition.getTop());
-                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
-                                    recognition.getRight(), recognition.getBottom());
-
-                            if (((recognition.getRight() == 150f) && (recognition.getBottom() == 100f)) && ((recognition.getLeft() == 150f) && (recognition.getTop() == 100f))) {
-                                duckPos = 1;
-                            } else if (((recognition.getRight() == 150f) && (recognition.getBottom() == 100f)) && ((recognition.getLeft() == 150f) && (recognition.getTop() == 100f))) {
-                                duckPos = 2;
-                            } else {
-                                duckPos = 3;
-                            }
-                            telemetry.addData("Duck Pos: ", duckPos);
-
-                            i++;
-                        }
-                        telemetry.update();
-                    }
-                }
-            }
-        }
-
-
-
-    brakeMotors();
+        brakeMotors();
         reverseMotors();
         waitForStart();
         runtime.reset();

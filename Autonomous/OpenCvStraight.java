@@ -154,9 +154,9 @@ public class OpenCvStraight extends LinearOpMode
                  * NB: calling closeCameraDevice() will internally call stopStreaming() if applicable,
                  * but it doesn't hurt to call it anyway, if for no other reason than clarity.
                  *
-                 * NB2: if you are stopping the camera stream to simply save some processing power
                  * (or battery power) for a short while when you do not need your vision pipeline,
                  * it is recommended to NOT call closeCameraDevice() as you will then need to re-open
+                 * NB2: if you are stopping the camera stream to simply save some processing power
                  * it the next time you wish to activate your vision pipeline, which can take a bit of
                  * time. Of course, this comment is irrelevant in light of the use case described in
                  * the above "important note".

@@ -16,9 +16,9 @@ public class TelePhone extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motorLeft, motorLeft2,
-            motorRight, motorRight2, motorXRail, motorLift, motorCollecter, motorLeftDuck, motorRightDuck;
-   // private CRServo servoLeft, servoRight, servoMain;
-
+            motorRight, motorRight2, motorXRail, motorLift, motorCollecter, motorDuck;
+   // private CRServo servoLeft, servoRight, servoMain
+    private Servo servoWipe;
     private boolean buttonG2APressedLast = false;
 
     public void drive(double left, double right){
@@ -47,8 +47,8 @@ public class TelePhone extends LinearOpMode {
         motorXRail =hardwareMap.dcMotor.get("motor_5");
         motorLift = hardwareMap.dcMotor.get("motor_4");
         motorCollecter = hardwareMap.dcMotor.get("motor_6");
-        motorLeftDuck = hardwareMap.dcMotor.get("motor_7");
-        motorRightDuck = hardwareMap.dcMotor.get("motor_8");
+        motorDuck = hardwareMap.dcMotor.get("motor_7");
+        servoWipe = hardwareMap.servo.get("servo_1");
         //servoMain = hardwareMap.servo.get("servo_2");
         //servoLeft = hardwareMap.crservo.get("servo_1");
         //servoRight = hardwareMap.crservo.get("servo_0");
@@ -58,7 +58,6 @@ public class TelePhone extends LinearOpMode {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        motorRight.setDirection(DcMotor.Direction.REVERSE);
         //motorRight2.setDirection(DcMotor.Direction.REVERSE);
 
         motorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -72,7 +71,7 @@ public class TelePhone extends LinearOpMode {
         waitForStart();
         runtime.reset();
         timer.startTime();
-       
+        boolean wipeUp = true;
         while (opModeIsActive()) {
 
 
@@ -88,18 +87,35 @@ public class TelePhone extends LinearOpMode {
             }
             //Servo Control
             if(gamepad2.left_bumper){
-                    motorLeftDuck.setPower(1);
-                    motorRightDuck.setPower(1);
+                    motorDuck.setPower(0.5);
+                    sleep(300);
+                    motorDuck.setPower(1);
+                    sleep(1450);
                 
             } else if (gamepad2.right_bumper){
-                    motorLeftDuck.setPower(-1);
-                    motorRightDuck.setPower(-1);
+                    motorDuck.setPower(-0.5);
+                    sleep(300);
+                    motorDuck.setPower(-1);
+                    sleep(1450);
+
                 
             } else {
-                motorLeftDuck.setPower(0);
-                motorRightDuck.setPower(0);
+                motorDuck.setPower(0);
             }
+           
+           
+            if (gamepad2.dpad_down){
+                
+                    servoWipe.setPosition(1);
+                    
+            }
+            if (gamepad2.dpad_up){
+                    servoWipe.setPosition(0);
+                    
 
+                    
+                
+            }
             if (gamepad2.right_stick_y >=  0.2|| gamepad2.right_stick_y <= -0.2){
                  telemetry.addData("Status", "In if");
                     telemetry.update();
@@ -122,6 +138,7 @@ public class TelePhone extends LinearOpMode {
             }
             if (gamepad2.right_trigger  >= 0.1){
                     motorCollecter.setPower(gamepad2.right_trigger);
+                    
                 
             } else if (gamepad2.left_trigger  >= 0.1){
                     motorCollecter.setPower(-gamepad2.left_trigger);
@@ -140,8 +157,9 @@ public class TelePhone extends LinearOpMode {
         
     }
     private void reverseMotors(){
-            motorRight.setDirection(DcMotor.Direction.REVERSE);
-            motorXRail.setDirection(DcMotor.Direction.REVERSE);
+        motorRight.setDirection(DcMotor.Direction.REVERSE);
+        motorRight2.setDirection(DcMotor.Direction.REVERSE);
+        motorXRail.setDirection(DcMotor.Direction.REVERSE);
         
       }
 }
