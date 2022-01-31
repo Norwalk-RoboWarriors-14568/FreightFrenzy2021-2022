@@ -24,8 +24,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
-import Autonomous.OpenCvRed;
-
+import Autonomous.OpenCvBlue;
 @Autonomous(name = "Blue Car")
 public class AAABlueCarousel extends LinearOpMode {
     // Declare OpMode members.
@@ -42,6 +41,8 @@ public class AAABlueCarousel extends LinearOpMode {
     private DcMotor motorDuck;
     private DistanceSensor distance;
     int hubLevel = 1;
+    //OpenCvRed cvRed;
+    OpenCvBlue openCv;
     //OpenCVBLUE CVBlue;
     //private CRServo servoLeft, servoRight;
     private double CPI_ATV_DT, CPI_OMNI_DT;
@@ -88,9 +89,10 @@ public class AAABlueCarousel extends LinearOpMode {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
+       
 
-        cvRed = new OpenCvRed();
-        cvRed.readyRed(hardwareMap, telemetry);
+        openCv = new OpenCvBlue();
+        openCv.readyRed(hardwareMap, telemetry);
 
 
         brakeMotors();
@@ -112,7 +114,7 @@ public class AAABlueCarousel extends LinearOpMode {
             sleep(500);
 
             if (distance.getDistance(DistanceUnit.INCH) < 10){
-                hubLevel = 1;
+                hubLevel = 3;
                 sleep(500);
 
             }
@@ -122,19 +124,21 @@ public class AAABlueCarousel extends LinearOpMode {
             encoderDrive(0.3, 0.3, -3 , 2.5);//drive to second duck spot
             sleep(500);
 
-            if (hubLevel != 1 && distance.getDistance(DistanceUnit.INCH) < 10){
+            if (hubLevel != 3 && distance.getDistance(DistanceUnit.INCH) < 10){
                 hubLevel = 2;
                 sleep(500);
 
             }
             //use camera here for turn to hub
-            while (cvRed.analysis() != 2){
-                drive(-0.05,0.05);//turn towards hu
-                telemetry.addData("Pos", cvRed.analysis());
-                telemetry.update();
+                        boolean cont = false;
 
+            if (openCv.analysis() >0 ){
+                //drive(0.05,-0.05);//turn towards hu    
+                telemetry.addData("Pos", openCv.analysis());
+                telemetry.update();
+                cont = true;
             }
-            telemetry.addData("Pos", cvRed.analysis());
+            telemetry.addData("Pos", openCv.analysis());
             telemetry.addLine("Hub Found!");
             telemetry.update();
             drive(0,0);
@@ -146,10 +150,16 @@ public class AAABlueCarousel extends LinearOpMode {
 
 
             hubLevel(hubLevel); //drop preload in hub at hubLevel
-            encoderDrive( 0, 0.5,-8,5); //turn to warehouse
+            encoderDrive( 0.5, 0,-8,5); //turn to warehouse
+            if (cont){ 
             sleep(5000);
-
             encoderDrive( 0.95, 1,90,90); //drive to warehouse
+            } else {
+
+                telemetry.addLine("AWW HELL NO!!");
+                telemetry.update();
+                sleep(7000);
+            }
         }
     }
 
@@ -192,7 +202,7 @@ public class AAABlueCarousel extends LinearOpMode {
             telemetry.addData("Current Pos Right:", motorRightBACK.getCurrentPosition());
             telemetry.addData("right power: ", motorRightBACK.getPower());
             telemetry.addData("left power: ", motorLeftBACK.getPower());
-            telemetry.addData("Pos", cvRed.analysis());
+            telemetry.addData("Pos", openCv.analysis());
             telemetry.update();
         }
         // Stop all motion;
@@ -248,7 +258,7 @@ public class AAABlueCarousel extends LinearOpMode {
     }
 
     public void spinDuck(double power){//for red Carousel the value needs to be negative
-        motorDuck.setPower(power);
+        motorDuck.setPower(-power);
         sleep(3000);
         motorDuck.setPower(0);
     }

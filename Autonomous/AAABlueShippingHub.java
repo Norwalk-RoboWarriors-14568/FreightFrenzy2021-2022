@@ -30,9 +30,11 @@ public class AAABlueShippingHub extends LinearOpMode {
     //private boolean buttonG2APressest = false;
     //private boolean buttonG2XPressedLast = false;
     private ElapsedTime timer;
+        private final int hexCoreCPR = 288;
+
     private final int CPR_ODOMETRY = 8192;//counts per revolution for encoder, from website
     private final int ODOMETRY_WHEEL_DIAMETER = 4;
-    private double CPI_ATV_DT, CPI_OMNI_DT;
+    private double CPI_ATV_DT, CPI_OMNI_DT, CPI_CORE_HEX, CPI_GOBILDA26TO1;
     private int timeOutCount = 0;
     // private VoltageSensor vs;
     private double gameTimeSnapShot = 0;
@@ -44,6 +46,9 @@ public class AAABlueShippingHub extends LinearOpMode {
         //CPI =     ticksPerRev / (circumerence);
         CPI_ATV_DT = 537.7/ ( 4.75 * Math.PI);
         CPI_OMNI_DT = 537.7/ (3.75 * Math.PI);
+        CPI_GOBILDA26TO1 = 180.81*2.6;
+        CPI_CORE_HEX = hexCoreCPR/4.4;
+
         motorLeftBACK = hardwareMap.dcMotor.get("motor_0");
         motorRightBACK = hardwareMap.dcMotor.get("motor_1");
         motorLeftFRONT = hardwareMap.dcMotor.get( "motor_2");
@@ -71,33 +76,35 @@ public class AAABlueShippingHub extends LinearOpMode {
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);
             encoderDrive(0.3, 0.3, 13,13);
             if (distance.getDistance(DistanceUnit.INCH) < 10){
-                hubLevel = 2;
-
-            }
-            sleep(200);
+                    hubLevel = 2;
+                  
+                }
             encoderDrive(0, 0.5, 3, -5);
             sleep(500);
-            if (distance.getDistance(DistanceUnit.INCH) < 10 && hubLevel != 2){
-                hubLevel = 3;
 
-            }
+            if (distance.getDistance(DistanceUnit.INCH) < 10 && hubLevel != 2){
+                    hubLevel = 3;
+                  
+                }
+            encoderDrive(0.5, 0, 4.5,3);
+            sleep(500);
+
             telemetry.addData("Distance (IN)", distance.getDistance(DistanceUnit.INCH));
             telemetry.addData("HL", hubLevel);
 
             telemetry.update();
             sleep(200);
-            encoderDrive(0.5, 0, 5, 3);
             sleep(200);
-            encoderDrive(0.5, 0.5, 3.5, 3.5);
+            encoderDrive(0.5, 0.5, 2.5, 2.5);
 
             hubLevel(hubLevel);
-            encoderDrive(0.5, 0.5, 1.5,1.5);
+            encoderDrive(0.5, 0.5, 2,2);
             sleep(200);
             encoderDrive(0.3,0.3, 27.5,-27.5);
             sleep(200);
 
             encoderDrive(0.9,0.9, 36, 36);
-
+            drive(0,0);
                 /*
              while(opModeIsActive()) {
                 telemetry.addData("Distance (IN)", distance.getDistance(DistanceUnit.INCH));
@@ -115,13 +122,42 @@ public class AAABlueShippingHub extends LinearOpMode {
             */
         }
     }
+ public void armHeight(double armSpeed, double armInches) {
 
+        int newArmTarget = motorLift.getCurrentPosition() + (int) (CPI_GOBILDA26TO1 * armInches);
+        motorLift.setPower(armSpeed);
+        while (opModeIsActive() && !IsInRange(motorLift.getCurrentPosition(), newArmTarget)){
+            telemetry.addData("Target Left: ", newArmTarget);
+            telemetry.addData("Current Pos Right:", motorLift.getCurrentPosition());
+            telemetry.addData("left power: ", motorLift.getPower());
+            telemetry.update();
+        }
+        motorLift.setPower(0);
+        
+    }
+    
+    public void armDrive(double armSpeed, double armInches){
+        int newArmTarget = motorXRail.getCurrentPosition() + (int) (CPI_CORE_HEX * armInches);
+        motorXRail.setPower(armSpeed);
+        while (opModeIsActive() && !IsInRange(motorXRail.getCurrentPosition(), newArmTarget)){
+            telemetry.addData("Target Left: ", newArmTarget);
+            telemetry.addData("Current Pos Right:", motorXRail.getCurrentPosition());
+            telemetry.addData("left power: ", motorXRail.getPower());
+            telemetry.update();
+        }
+        motorXRail.setPower(0);
+    }
     public void encoderDrive(double leftDTSpeed, double rightDTSpeed, double mtrLeftInches, double mtrRightInches) {
         int newLeftTarget = motorLeftBACK.getCurrentPosition() + (int) (CPI_ATV_DT * mtrLeftInches);
         int newRightTarget = motorRightBACK.getCurrentPosition() + (int) (CPI_ATV_DT * mtrRightInches);
         drive(mtrLeftInches < 0 ? -leftDTSpeed : leftDTSpeed, mtrRightInches < 0 ? -rightDTSpeed : rightDTSpeed);
         while (opModeIsActive() && !IsInRange(motorLeftBACK.getCurrentPosition(), newLeftTarget)
                 && !IsInRange(motorRightBACK.getCurrentPosition(), newRightTarget)) {
+            telemetry.addData("Hub Level", hubLevel);
+            telemetry.addData("Hub Level", hubLevel);
+            telemetry.addData("Hub Level", hubLevel);
+            telemetry.addData("Distance (IN)", distance.getDistance(DistanceUnit.INCH));
+
             telemetry.addData("Target Left: ", newLeftTarget);
             telemetry.addData("Target right: ", newRightTarget);
             telemetry.addData("Current Pos Left:", motorLeftBACK.getCurrentPosition());
@@ -133,7 +169,7 @@ public class AAABlueShippingHub extends LinearOpMode {
         // Stop all motion;
         drive(0, 0);
     }
-    public void elevateArm(double seconds, double power){
+     public void elevateArm(double seconds, double power){
 
         motorLift.setPower(power);
         sleep((long) (seconds * 1000));
@@ -141,15 +177,56 @@ public class AAABlueShippingHub extends LinearOpMode {
 
 
     }
+    
+    public void hubLevel(int level){
+        double armHeightSpeed = 0;
+        double armHeightInches = 0;
+        double armXSpeed = 0;
+        double armXInches = 0;
+        double spitSpeed = -0.4;
+        
+        switch (level) {
+            case 1: //Lower
+                armHeightSpeed = -0.5;
+                armHeightInches = -6;
+                armXSpeed = 0.5;
+                armXInches = 8;
+                break;
+            case 2: //Middle
+                armHeightSpeed = -0.5;
+                armHeightInches = -3;
+                armXSpeed = 0.5;
+                armXInches = 11.5;
+                break;
+            case 3: //Top
+                armHeightSpeed = 0;
+                armHeightInches = 0;
+                armXSpeed = 0.5;
+                armXInches = 16;
+                break;
+            default:
+                break;
+                
+        }
+        telemetry.addData("xinches ", armXInches);
+
+        
+        armHeight(armHeightSpeed, armHeightInches);
+        armDrive(armXSpeed, armXInches);
+        spitOut(spitSpeed);
+        armDrive(-armXSpeed, -armXInches);
+        armHeight(-armHeightSpeed, -armHeightInches);
+    }
+    /*
     public void hubLevel(int level){
         if (level == 1){
 
-            elevateArm(0.8, -0.8);
-            extendOrRetract(1.4, 1);//layer 2 = 1 seconds, lsyer 1 is 0 secondselevateArm(1, -0.6);
+            elevateArm(0.9, -0.8);
+            extendOrRetract(1.4, 0.8);//layer 2 = 1 seconds, lsyer 1 is 0 secondselevateArm(1, -0.6);
             spitOut(-0.2);//100 is middle, 10 is bottom
 
             extendOrRetract(1.2, -1);
-            elevateArm(0.9, 0.6);
+            elevateArm(0.9, 0.5);
 
         } else if (level == 2){
             extendOrRetract(1.5, 1);//layer 2 = 1 seconds, lsyer 1 is 0 seconds
@@ -160,15 +237,16 @@ public class AAABlueShippingHub extends LinearOpMode {
             extendOrRetract(1, -1);
         } else {
             extendOrRetract(2, 1);//layer 2 = 1 seconds, lsyer 1 is 0 seconds
-            spitOut(-.2);//100 is middle, 10 is bottom
+            spitOut(-.4);//100 is middle, 10 is bottom
             extendOrRetract(2.5, -0.5);
         }
     }
+    */
     public void drive(double left, double right  ) {
-        motorLeftBACK.setPower(left);
-        motorRightBACK.setPower(right);
-        motorRightFRONT.setPower(right);
-        motorLeftFRONT.setPower(left);
+            motorLeftBACK.setPower(left);
+            motorRightBACK.setPower(right);
+            motorRightFRONT.setPower(right);
+            motorLeftFRONT.setPower(left);
     }
     private void toHub(){
         encoderDrive( 0.33, 0.6, 19, 35 );//Arc
@@ -213,11 +291,11 @@ public class AAABlueShippingHub extends LinearOpMode {
 
     }
     public void extendOrRetract(double seconds,double power){
-
-        motorXRail.setPower(power);//30 %
-        sleep((long) (seconds * 1000));
-        motorXRail.setPower(0);
-
+       
+            motorXRail.setPower(power);//30 %
+            sleep((long) (seconds * 1000));
+            motorXRail.setPower(0);
+        
     }
 
     private void reverseMotors(){
@@ -229,7 +307,7 @@ public class AAABlueShippingHub extends LinearOpMode {
         motorLeftBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRightBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorXRail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        
     }
 
 }
