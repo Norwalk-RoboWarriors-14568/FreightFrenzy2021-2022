@@ -89,7 +89,7 @@ public class AAABlueCarousel extends LinearOpMode {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-
+       
 
         openCv = new OpenCvBlue();
         openCv.readyRed(hardwareMap, telemetry);
@@ -133,7 +133,7 @@ public class AAABlueCarousel extends LinearOpMode {
                         boolean cont = false;
 
             if (openCv.analysis() >0 ){
-                //drive(0.05,-0.05);//turn towards hu
+                //drive(0.05,-0.05);//turn towards hu    
                 telemetry.addData("Pos", openCv.analysis());
                 telemetry.update();
                 cont = true;
@@ -151,7 +151,7 @@ public class AAABlueCarousel extends LinearOpMode {
 
             hubLevel(hubLevel); //drop preload in hub at hubLevel
             encoderDrive( 0.5, 0,-8,5); //turn to warehouse
-            if (cont){
+            if (cont){ 
             sleep(5000);
             encoderDrive( 0.95, 1,90,90); //drive to warehouse
             } else {

@@ -76,16 +76,16 @@ public class AAARedShippingHub extends LinearOpMode {
             encoderDrive(0.3, 0.3, 12,12);
             if (distance.getDistance(DistanceUnit.INCH) < 10){
                     hubLevel = 2;
-
+                  
                 }
             sleep(200);
             encoderDrive(0.5, 0, -5, 3);
             sleep(500);
             if (distance.getDistance(DistanceUnit.INCH) < 12 && hubLevel != 2){
                     hubLevel = 1;
-
+                  
                 }
-
+            
             telemetry.addData("Inch",distance.getDistance(DistanceUnit.INCH));
             telemetry.update();
             sleep(200);
@@ -129,9 +129,9 @@ public class AAARedShippingHub extends LinearOpMode {
             telemetry.update();
         }
         motorLift.setPower(0);
-
+        
     }
-
+    
     public void armDrive(double armSpeed, double armInches){
         int newArmTarget = motorXRail.getCurrentPosition() + (int) (CPI_CORE_HEX * armInches);
         motorXRail.setPower(armSpeed);
@@ -176,7 +176,7 @@ public class AAARedShippingHub extends LinearOpMode {
         double armXSpeed = 0;
         double armXInches = 0;
         double spitSpeed = -0.2;
-
+        
         switch (level) {
             case 1: //Lower
                 armHeightSpeed = -0.5;
@@ -198,9 +198,9 @@ public class AAARedShippingHub extends LinearOpMode {
                 break;
             default:
                 break;
-
+                
         }
-
+         
         armHeight(armHeightSpeed, armHeightInches);
         armDrive(armXSpeed, armXInches);
         spitOut(spitSpeed);
@@ -279,11 +279,11 @@ public class AAARedShippingHub extends LinearOpMode {
 
     }
     public void extendOrRetract(double seconds,double power){
-
+       
             motorXRail.setPower(power);//30 %
             sleep((long) (seconds * 1000));
             motorXRail.setPower(0);
-
+        
     }
 
     private void reverseMotors(){
@@ -295,7 +295,7 @@ public class AAARedShippingHub extends LinearOpMode {
         motorLeftBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRightBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorXRail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        
     }
 
 }

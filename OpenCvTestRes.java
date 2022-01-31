@@ -42,40 +42,24 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 //@TeleOp(name = "OpenCvRed")
 
-public class OpenCvRed //extends LinearOpMode
+public class OpenCvTestRes //extends LinearOpMode
 {
     public enum SkystonePosition
-<<<<<<< Updated upstream:Autonomous/OpenCvRed.java
-    {
-        SUPERLEFT,
-        LEFT,
-        CENTER,
-        RIGHT,
-        SUPERRIGHT
-    }
+        {
+            LEFT,
+            CENTER,
+            RIGHT
+        
+            
+        }
     OpenCvWebcam webcam;
     SamplePipeline pipeline;
     Telemetry telemetry;
     //LinearOpMode linearOpMode;
-
-=======
-        {
-            SUPERLEFT,
-            LEFT,
-            CENTER,
-            RIGHT,
-            SUPERRIGHT
-        }
-    OpenCvWebcam webcam;
-    SamplePipeline pipeline;
-    static Telemetry telemetry;
-    //LinearOpMode linearOpMode;
     
->>>>>>> Stashed changes:OpenCvRed.java
     //@Override
-    public void readyRed(HardwareMap hardwareMap, Telemetry telemetryIn)
+    public void readyRed(HardwareMap hardwareMap, Telemetry telemetry)
     {
-        telemetry = telemetryIn;
         /*
          * Instantiate an OpenCvCamera object for the camera we'll be using.
          * In this sample, we're using a webcam. Note that you will need to
@@ -130,7 +114,8 @@ public class OpenCvRed //extends LinearOpMode
                  * For a rear facing camera or a webcam, rotation is defined assuming the camera is facing
                  * away from the user.
                  */
-                webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+              
+                webcam.startStreaming(1280, 720, OpenCvCameraRotation.UPRIGHT);
             }
 
             @Override
@@ -152,72 +137,6 @@ public class OpenCvRed //extends LinearOpMode
 
         //while (opModeIsActive())
         //{
-<<<<<<< Updated upstream:Autonomous/OpenCvRed.java
-
-        //}
-
-    }
-
-    public int analysis()
-    {
-        return pipeline.getAnalysis().ordinal();
-    }
-
-    public void runWhileActive()
-    {
-        /*
-         * Send some stats to the telemetry
-         */
-
-        telemetry.addData("Frame Count", webcam.getFrameCount());
-        telemetry.addData("FPS", String.format("%.2f", webcam.getFps()));
-        telemetry.addData("Total frame time ms", webcam.getTotalFrameTimeMs());
-        telemetry.addData("Pipeline time ms", webcam.getPipelineTimeMs());
-        telemetry.addData("Overhead time ms", webcam.getOverheadTimeMs());
-        telemetry.addData("Theoretical max FPS", webcam.getCurrentPipelineMaxFps());
-        telemetry.addData("Analysis", pipeline.getAnalysis());
-        telemetry.addData("Max", pipeline.getMax());
-        telemetry.update();
-        //linearOpMode.sleep(50);
-
-        /*
-         * NOTE: stopping the stream from the camera early (before the end of the OpMode
-         * when it will be automatically stopped for you) *IS* supported. The "if" statement
-         * below will stop streaming from the camera when the "A" button on gamepad 1 is pressed.
-         */
-        //if(gamepad1.a)
-        //{
-        /*
-         * IMPORTANT NOTE: calling stopStreaming() will indeed stop the stream of images
-         * from the camera (and, by extension, stop calling your vision pipeline). HOWEVER,
-         * if the reason you wish to stop the stream early is to switch use of the camera
-         * over to, say, Vuforia or TFOD, you will also need to call closeCameraDevice()
-         * (commented out below), because according to the Android Camera API documentation:
-         *         "Your application should only have one Camera object active at a time for
-         *          a particular hardware camera."
-         *
-         * NB: calling closeCameraDevice() will internally call stopStreaming() if applicable,
-         * but it doesn't hurt to call it anyway, if for no other reason than clarity.
-         *
-         * NB2: if you are stopping the camera stream to simply save some processing power
-         * (or battery power) for a short while when you do not need your vision pipeline,
-         * it is recommended to NOT call closeCameraDevice() as you will then need to re-open
-         * it the next time you wish to activate your vision pipeline, which can take a bit of
-         * time. Of course, this comment is irrelevant in light of the use case described in
-         * the above "important note".
-         */
-        //    webcam.stopStreaming();
-        //webcam.closeCameraDevice();
-        //}
-
-
-        /*
-         * For the purposes of this sample, throttle ourselves to 10Hz loop to avoid burning
-         * excess CPU cycles for no reason. (By default, telemetry is only sent to the DS at 4Hz
-         * anyway). Of course in a real OpMode you will likely not want to do this.
-         */
-        //linearOpMode.sleep(100);
-=======
             
         //}
 
@@ -282,7 +201,6 @@ public class OpenCvRed //extends LinearOpMode
              * anyway). Of course in a real OpMode you will likely not want to do this.
              */
             //linearOpMode.sleep(100);
->>>>>>> Stashed changes:OpenCvRed.java
     }
 
     /*
@@ -304,208 +222,111 @@ public class OpenCvRed //extends LinearOpMode
     {   static final Scalar BLUE = new Scalar(0, 0, 255);
         static final Scalar GREEN = new Scalar(0, 255, 0);
         static final Scalar RED = new Scalar(255, 0, 0);
-<<<<<<< Updated upstream:Autonomous/OpenCvRed.java
-
-=======
         
->>>>>>> Stashed changes:OpenCvRed.java
-        Mat region1_Cb, region2_Cb, region3_Cb,region4_Cb,region5_Cb;
+        Mat  region2_Cb, region3_Cb,region4_Cb;
         Mat YCrCb = new Mat();
         Mat Cr = new Mat();
-        int avg2, avg3, avg4;
-        
-        
+
+
+
+        int  avg2, avg3, avg4;
+        static final int REGION_WIDTH = 250;
+        static final int REGION_HEIGHT = 210;
+      
         public static double newResX(double oldRes){
-            oldRes = (oldRes/1280)*640;
+            oldRes = oldRes;
             return oldRes;
         }
         public static double newResY(double oldRes){
-            oldRes = (oldRes/720)*480;
+            oldRes = oldRes;
             return oldRes;
         }
-
-<<<<<<< Updated upstream:Autonomous/OpenCvRed.java
-
-        int avg1, avg2, avg3, avg4, avg5;
-        static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0,250);
-        static final int REGION_WIDTH = 250;
-        static final int REGION_HEIGHT = 210;
-        /*  IF BLUE
-        void inputToCb(Mat input)
-                {
-                    Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
-                    Core.extractChannel(YCrCb, Cr, 2);
-
-=======
-        //int avg1, avg2, avg3, avg4, avg5;
-        //static final Point REGION1_TOPLEFT_ANCHOR_POINT = new Point(0,250);
-        static final int REGION_WIDTH = (250/6)/2;
-        static final int REGION_HEIGHT = (210*2)/2;
-        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(newResX(470),newResY(250));
-        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(newResX(512),newResY(250));
-        static final Point REGION4_TOPLEFT_ANCHOR_POINT = new Point(newResX(554),newResY(250));
-       // static final Point REGION5_TOPLEFT_ANCHOR_POINT = new Point(1024,250);
->>>>>>> Stashed changes:OpenCvRed.java
-
-                }
-
-        */
+   
         void inputToCb(Mat input)
         {
-<<<<<<< Updated upstream:Autonomous/OpenCvRed.java
-             = Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
-            Core.extractChannel(YCrCb, Cr, 1);
-
-
-=======
             Imgproc.cvtColor(input, YCrCb, Imgproc.COLOR_RGB2YCrCb);
-            Core.extractChannel(YCrCb, Cr, 1);
->>>>>>> Stashed changes:OpenCvRed.java
+            Core.extractChannel(YCrCb, Cr, 2);
+
+
         }
-/*
-        Point region1_pointA = new Point(
-                REGION1_TOPLEFT_ANCHOR_POINT.x,
-                REGION1_TOPLEFT_ANCHOR_POINT.y);
-        Point region1_pointB = new Point(
-                REGION1_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-                REGION1_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);*/
+
+        static final Point REGION2_TOPLEFT_ANCHOR_POINT = new Point(newResX(2),newResY(508));
+        static final Point REGION3_TOPLEFT_ANCHOR_POINT = new Point(newResX(530),newResY(508));
+        static final Point REGION4_TOPLEFT_ANCHOR_POINT = new Point(newResX(1217),newResY(508));
+      
+        
         Point region2_pointA = new Point(
                 REGION2_TOPLEFT_ANCHOR_POINT.x,
                 REGION2_TOPLEFT_ANCHOR_POINT.y);
         Point region2_pointB = new Point(
-                REGION2_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+                REGION2_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH/4,
                 REGION2_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
         Point region3_pointA = new Point(
                 REGION3_TOPLEFT_ANCHOR_POINT.x,
                 REGION3_TOPLEFT_ANCHOR_POINT.y);
         Point region3_pointB = new Point(
-                REGION3_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH/6,
+                REGION3_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH/2,
                 REGION3_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
         Point region4_pointA = new Point(
                 REGION4_TOPLEFT_ANCHOR_POINT.x,
                 REGION4_TOPLEFT_ANCHOR_POINT.y);
         Point region4_pointB = new Point(
-                REGION4_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
+                REGION4_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH/4,
                 REGION4_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
-       /* Point region5_pointA = new Point(
-                REGION5_TOPLEFT_ANCHOR_POINT.x,
-                REGION5_TOPLEFT_ANCHOR_POINT.y);
-        Point region5_pointB = new Point(
-                REGION5_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-                REGION5_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);*/
-        private volatile SkystonePosition position = SkystonePosition.SUPERLEFT;
+     
+       
+        private volatile SkystonePosition position = SkystonePosition.LEFT;
 
 
         @Override
         public void init(Mat firstFrame)
         {
             inputToCb(firstFrame);
-          //  region1_Cb = Cr.submat(new Rect(region1_pointA, region1_pointB));
             region2_Cb = Cr.submat(new Rect(region2_pointA, region2_pointB));
             region3_Cb = Cr.submat(new Rect(region3_pointA, region3_pointB));
             region4_Cb = Cr.submat(new Rect(region4_pointA, region4_pointB));
-           // region5_Cb = Cr.submat(new Rect(region5_pointA, region5_pointB));
-
+            
+            
         }
+        //int boxR =
         @Override
         public Mat processFrame(Mat input)
         {
 
             inputToCb(input);
 
-           // avg1 = (int) Core.mean(region1_Cb).val[0];
             avg2 = (int) Core.mean(region2_Cb).val[0];
             avg3 = (int) Core.mean(region3_Cb).val[0];
             avg4 = (int) Core.mean(region4_Cb).val[0];
-            telemetry.addData("A2", avg2);
-            telemetry.addData("3", avg3);
-            telemetry.addData("A4", avg4);
-            telemetry.addData("BOX", newResX(250));
-            telemetry.update();
-          //  avg5 = (int) Core.mean(region5_Cb).val[0];
+           
 
 
-           /* Imgproc.rectangle(
-                    input, // Buffer to draw on
-                    region1_pointA, // First point which defines the rectangle
-                    region1_pointB, // Second point which defines the rectangle
-                    RED, // The color the rectangle is drawn in
-<<<<<<< Updated upstream:Autonomous/OpenCvRed.java
-                    20); // Thickness of the rectangle lines
-=======
-                    20); // Thickness of the rectangle lines*/
->>>>>>> Stashed changes:OpenCvRed.java
+            
             Imgproc.rectangle(
                     input, // Buffer to draw on
                     region2_pointA, // First point which defines the rectangle
                     region2_pointB, // Second point which defines the rectangle
                     RED, // The color the rectangle is drawn in
-<<<<<<< Updated upstream:Autonomous/OpenCvRed.java
-                    20); // Thickness of the rectangle lines
-=======
-                    20/2); // Thickness of the rectangle lines
->>>>>>> Stashed changes:OpenCvRed.java
+                    2); // Thickness of the rectangle lines
             Imgproc.rectangle(
                     input, // Buffer to draw on
                     region3_pointA, // First point which defines the rectangle
                     region3_pointB, // Second point which defines the rectangle
                     RED, // The color the rectangle is drawn in
-<<<<<<< Updated upstream:Autonomous/OpenCvRed.java
-                    20); // Thickness of the rectangle lines
-=======
-                    20/2); // Thickness of the rectangle lines
->>>>>>> Stashed changes:OpenCvRed.java
+                    2); // Thickness of the rectangle lines
             Imgproc.rectangle(
                     input, // Buffer to draw on
                     region4_pointA, // First point which defines the rectangle
                     region4_pointB, // Second point which defines the rectangle
                     RED, // The color the rectangle is drawn in
-<<<<<<< Updated upstream:Autonomous/OpenCvRed.java
-                    20); // Thickness of the rectangle lines
-            Imgproc.rectangle(
-=======
-                    20/2); // Thickness of the rectangle lines
-      /*      Imgproc.rectangle(
->>>>>>> Stashed changes:OpenCvRed.java
-                    input, // Buffer to draw on
-                    region5_pointA, // First point which defines the rectangle
-                    region5_pointB, // Second point which defines the rectangle
-                    RED, // The color the rectangle is drawn in
-<<<<<<< Updated upstream:Autonomous/OpenCvRed.java
-                    20); // Thickness of the rectangle lines
-
-
-            int maxOneTwo = Math.max(avg1, avg2);
-            int maxTwoThree = Math.max(maxOneTwo, avg3);
-            int maxThreeFour = Math.max(maxTwoThree, avg4);
-            int max = Math.max(maxThreeFour, avg5);
-=======
-                    20); // Thickness of the rectangle lines*/
-
-
-           // int maxOneTwo = Math.max(avg1, avg2);
-            int maxTwoThree = Math.max(avg2, avg3);
-            int max = Math.max(maxTwoThree, avg4);
-            if (max < 143){
-                position = SkystonePosition.SUPERLEFT;
-            }
-          //  int max = Math.max(maxThreeFour, avg5);
->>>>>>> Stashed changes:OpenCvRed.java
-
-            /*if(max == avg1) // Was it from region 1?
-            {
-                position = SkystonePosition.SUPERLEFT; // Record our analysis
-
-
-                Imgproc.rectangle(
-                        input, // Buffer to draw on
-                        region1_pointA, // First point which defines the rectangle
-                        region1_pointB, // Second point which defines the rectangle
-                        GREEN, // The color the rectangle is drawn in
-                        -1); // Negative thickness means solid fill
-            }*/
+                    2); // Thickness of the rectangle lines
+                    
            
-            else if(max == avg2) // Was it from region 2?
+            int maxOneTwo = Math.min(avg2, avg3);
+            int max = Math.min(maxOneTwo, avg4);
+            
+            
+            if(max == avg2) // Was it from region 2?
             {
                 position = SkystonePosition.LEFT; // Record our analysis
 
@@ -525,7 +346,7 @@ public class OpenCvRed //extends LinearOpMode
                         input, // Buffer to draw on
                         region3_pointA, // First point which defines the rectangle
                         region3_pointB, // Second point which defines the rectangle
-                        GREEN, // The color the rectangle is drawn in
+                        BLUE, // The color the rectangle is drawn in
                         -1); // Negative thickness means solid fill
             }
             else if(max == avg4) // Was it from region 2?
@@ -540,31 +361,17 @@ public class OpenCvRed //extends LinearOpMode
                         GREEN, // The color the rectangle is drawn in
                         -1); // Negative thickness means solid fill
             }
-            /*else if(max == avg5) // Was it from region 3?
-            {
-                position = SkystonePosition.SUPERRIGHT; // Record our analysis
-
-                Imgproc.rectangle(
-                        input, // Buffer to draw on
-                        region5_pointA, // First point which defines the rectangle
-                        region5_pointB, // Second point which defines the rectangle
-                        GREEN, // The color the rectangle is drawn in
-                        -1); // Negative thickness means solid fill
-            }
-*/
+            
 
             return input;
         }
         public SkystonePosition getAnalysis()
         {
-            
             return position;
         }
         public int getMax(){
-           // int maxOneTwo = Math.min(avg1, avg2);
-            int maxTwoThree = Math.min(avg2, avg3);
-            int max = Math.min(maxTwoThree, avg4);
-         //   int max = Math.min(maxThreeFour, avg5);
+              int maxOneTwo = Math.min(avg2, avg3);
+            int max = Math.min(maxOneTwo, avg4);
 
             return max;
         }

@@ -11,11 +11,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 
-@Autonomous(name = "REDHUB🟥🟥🟥🟥🟥🟥🟥")
+@Autonomous(name = "BLUEHUB🟥🔪🟩")
 
-public class AAARedShippingHub extends LinearOpMode {
+public class AAABlueShippingHub extends LinearOpMode {
     // Declare OpMode members.
-    int hubLevel = 3;
+    int hubLevel = 1;
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor motorLeftBACK = null;
     private DcMotor motorRightBACK = null;
@@ -26,11 +26,12 @@ public class AAARedShippingHub extends LinearOpMode {
     private DcMotor motorCollector;
     private CRServo servoLeft, servoRight;
     private DistanceSensor distance;
-        private final int hexCoreCPR = 288;
 
     //private boolean buttonG2APressest = false;
     //private boolean buttonG2XPressedLast = false;
     private ElapsedTime timer;
+        private final int hexCoreCPR = 288;
+
     private final int CPR_ODOMETRY = 8192;//counts per revolution for encoder, from website
     private final int ODOMETRY_WHEEL_DIAMETER = 4;
     private double CPI_ATV_DT, CPI_OMNI_DT, CPI_CORE_HEX, CPI_GOBILDA26TO1;
@@ -73,34 +74,37 @@ public class AAARedShippingHub extends LinearOpMode {
         if (opModeIsActive()) {
             motorSetModes(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);
-            encoderDrive(0.3, 0.3, 12,12);
+            encoderDrive(0.3, 0.3, 13,13);
             if (distance.getDistance(DistanceUnit.INCH) < 10){
                     hubLevel = 2;
-
+                  
                 }
-            sleep(200);
-            encoderDrive(0.5, 0, -5, 3);
+            encoderDrive(0, 0.5, 3, -5);
             sleep(500);
-            if (distance.getDistance(DistanceUnit.INCH) < 12 && hubLevel != 2){
-                    hubLevel = 1;
 
+            if (distance.getDistance(DistanceUnit.INCH) < 10 && hubLevel != 2){
+                    hubLevel = 3;
+                  
                 }
+            encoderDrive(0.5, 0, 4.5,3);
+            sleep(500);
 
-            telemetry.addData("Inch",distance.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Distance (IN)", distance.getDistance(DistanceUnit.INCH));
+            telemetry.addData("HL", hubLevel);
+
             telemetry.update();
             sleep(200);
-            encoderDrive(0, 0.5, 3, 5.5);
             sleep(200);
-            encoderDrive(0.5, 0.5, 3.5, 3.5);
+            encoderDrive(0.5, 0.5, 2.5, 2.5);
 
             hubLevel(hubLevel);
-            encoderDrive(0.5, 0.5, 1.5,1.5);
+            encoderDrive(0.5, 0.5, 2,2);
             sleep(200);
-            encoderDrive(0.3,0.3, -27.5,27.5);
+            encoderDrive(0.3,0.3, 27.5,-27.5);
             sleep(200);
 
             encoderDrive(0.9,0.9, 36, 36);
-
+            drive(0,0);
                 /*
              while(opModeIsActive()) {
                 telemetry.addData("Distance (IN)", distance.getDistance(DistanceUnit.INCH));
@@ -118,7 +122,7 @@ public class AAARedShippingHub extends LinearOpMode {
             */
         }
     }
-     public void armHeight(double armSpeed, double armInches) {
+ public void armHeight(double armSpeed, double armInches) {
 
         int newArmTarget = motorLift.getCurrentPosition() + (int) (CPI_GOBILDA26TO1 * armInches);
         motorLift.setPower(armSpeed);
@@ -129,9 +133,9 @@ public class AAARedShippingHub extends LinearOpMode {
             telemetry.update();
         }
         motorLift.setPower(0);
-
+        
     }
-
+    
     public void armDrive(double armSpeed, double armInches){
         int newArmTarget = motorXRail.getCurrentPosition() + (int) (CPI_CORE_HEX * armInches);
         motorXRail.setPower(armSpeed);
@@ -149,14 +153,17 @@ public class AAARedShippingHub extends LinearOpMode {
         drive(mtrLeftInches < 0 ? -leftDTSpeed : leftDTSpeed, mtrRightInches < 0 ? -rightDTSpeed : rightDTSpeed);
         while (opModeIsActive() && !IsInRange(motorLeftBACK.getCurrentPosition(), newLeftTarget)
                 && !IsInRange(motorRightBACK.getCurrentPosition(), newRightTarget)) {
+            telemetry.addData("Hub Level", hubLevel);
+            telemetry.addData("Hub Level", hubLevel);
+            telemetry.addData("Hub Level", hubLevel);
+            telemetry.addData("Distance (IN)", distance.getDistance(DistanceUnit.INCH));
+
             telemetry.addData("Target Left: ", newLeftTarget);
             telemetry.addData("Target right: ", newRightTarget);
             telemetry.addData("Current Pos Left:", motorLeftBACK.getCurrentPosition());
             telemetry.addData("Current Pos Right:", motorRightBACK.getCurrentPosition());
             telemetry.addData("right power: ", motorRightBACK.getPower());
             telemetry.addData("left power: ", motorLeftBACK.getPower());
-            telemetry.addData("Distance (IN)", distance.getDistance(DistanceUnit.INCH));
-            telemetry.addData("HL", hubLevel);
             telemetry.update();
         }
         // Stop all motion;
@@ -170,13 +177,14 @@ public class AAARedShippingHub extends LinearOpMode {
 
 
     }
+    
     public void hubLevel(int level){
         double armHeightSpeed = 0;
         double armHeightInches = 0;
         double armXSpeed = 0;
         double armXInches = 0;
-        double spitSpeed = -0.2;
-
+        double spitSpeed = -0.4;
+        
         switch (level) {
             case 1: //Lower
                 armHeightSpeed = -0.5;
@@ -188,7 +196,7 @@ public class AAARedShippingHub extends LinearOpMode {
                 armHeightSpeed = -0.5;
                 armHeightInches = -3;
                 armXSpeed = 0.5;
-                armXInches = 10;
+                armXInches = 11.5;
                 break;
             case 3: //Top
                 armHeightSpeed = 0;
@@ -198,24 +206,27 @@ public class AAARedShippingHub extends LinearOpMode {
                 break;
             default:
                 break;
-
+                
         }
+        telemetry.addData("xinches ", armXInches);
 
+        
         armHeight(armHeightSpeed, armHeightInches);
         armDrive(armXSpeed, armXInches);
         spitOut(spitSpeed);
         armDrive(-armXSpeed, -armXInches);
         armHeight(-armHeightSpeed, -armHeightInches);
-    }/*
+    }
+    /*
     public void hubLevel(int level){
         if (level == 1){
 
-            elevateArm(0.8, -0.8);
-            extendOrRetract(1.1, 1);//layer 2 = 1 seconds, lsyer 1 is 0 secondselevateArm(1, -0.6);
+            elevateArm(0.9, -0.8);
+            extendOrRetract(1.4, 0.8);//layer 2 = 1 seconds, lsyer 1 is 0 secondselevateArm(1, -0.6);
             spitOut(-0.2);//100 is middle, 10 is bottom
 
-            extendOrRetract(1, -1);
-            elevateArm(0.9, 0.6);
+            extendOrRetract(1.2, -1);
+            elevateArm(0.9, 0.5);
 
         } else if (level == 2){
             extendOrRetract(1.5, 1);//layer 2 = 1 seconds, lsyer 1 is 0 seconds
@@ -226,10 +237,11 @@ public class AAARedShippingHub extends LinearOpMode {
             extendOrRetract(1, -1);
         } else {
             extendOrRetract(2, 1);//layer 2 = 1 seconds, lsyer 1 is 0 seconds
-            spitOut(-.2);//100 is middle, 10 is bottom
+            spitOut(-.4);//100 is middle, 10 is bottom
             extendOrRetract(2.5, -0.5);
         }
-    }*/
+    }
+    */
     public void drive(double left, double right  ) {
             motorLeftBACK.setPower(left);
             motorRightBACK.setPower(right);
@@ -279,11 +291,11 @@ public class AAARedShippingHub extends LinearOpMode {
 
     }
     public void extendOrRetract(double seconds,double power){
-
+       
             motorXRail.setPower(power);//30 %
             sleep((long) (seconds * 1000));
             motorXRail.setPower(0);
-
+        
     }
 
     private void reverseMotors(){
@@ -295,7 +307,7 @@ public class AAARedShippingHub extends LinearOpMode {
         motorLeftBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRightBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorXRail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        
     }
 
 }
