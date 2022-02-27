@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 
-@Autonomous(name = "BLUEHUB🟥🔪🟩")
+@Autonomous(name = "BLUEHUB")
 
 public class AAABlueShippingHub extends LinearOpMode {
     // Declare OpMode members.
@@ -30,7 +30,7 @@ public class AAABlueShippingHub extends LinearOpMode {
     //private boolean buttonG2APressest = false;
     //private boolean buttonG2XPressedLast = false;
     private ElapsedTime timer;
-        private final int hexCoreCPR = 288;
+    private final int hexCoreCPR = 288;
 
     private final int CPR_ODOMETRY = 8192;//counts per revolution for encoder, from website
     private final int ODOMETRY_WHEEL_DIAMETER = 4;
@@ -46,7 +46,7 @@ public class AAABlueShippingHub extends LinearOpMode {
         //CPI =     ticksPerRev / (circumerence);
         CPI_ATV_DT = 537.7/ ( 4.75 * Math.PI);
         CPI_OMNI_DT = 537.7/ (3.75 * Math.PI);
-        CPI_GOBILDA26TO1 = 180.81*2.6;
+        CPI_GOBILDA26TO1 = 180.81*2.6/2.5;//gear ratio adjustment
         CPI_CORE_HEX = hexCoreCPR/4.4;
 
         motorLeftBACK = hardwareMap.dcMotor.get("motor_0");
@@ -76,17 +76,17 @@ public class AAABlueShippingHub extends LinearOpMode {
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);
             encoderDrive(0.3, 0.3, 13,13);
             if (distance.getDistance(DistanceUnit.INCH) < 10){
-                    hubLevel = 2;
-                  
-                }
-            encoderDrive(0, 0.5, 3, -5);
+                hubLevel = 2;
+
+            }
+            encoderDrive(0.1, 0.5, 2.5, -4.5);
             sleep(500);
 
             if (distance.getDistance(DistanceUnit.INCH) < 10 && hubLevel != 2){
-                    hubLevel = 3;
-                  
-                }
-            encoderDrive(0.5, 0, 4.5,3);
+                hubLevel = 3;
+
+            }
+            encoderDrive(0.5, 0, 5.50,3);
             sleep(500);
 
             telemetry.addData("Distance (IN)", distance.getDistance(DistanceUnit.INCH));
@@ -95,15 +95,15 @@ public class AAABlueShippingHub extends LinearOpMode {
             telemetry.update();
             sleep(200);
             sleep(200);
-            encoderDrive(0.5, 0.5, 2.5, 2.5);
+            encoderDrive(0.6, 0.5, 3, 2.5);
 
             hubLevel(hubLevel);
             encoderDrive(0.5, 0.5, 2,2);
             sleep(200);
-            encoderDrive(0.3,0.3, 27.5,-27.5);
+            encoderDrive(0.3,0.3, 4.5,-4.5);
             sleep(200);
 
-            encoderDrive(0.9,0.9, 36, 36);
+            encoderDrive(0.9,0.9, -45, -45);
             drive(0,0);
                 /*
              while(opModeIsActive()) {
@@ -122,7 +122,7 @@ public class AAABlueShippingHub extends LinearOpMode {
             */
         }
     }
- public void armHeight(double armSpeed, double armInches) {
+    public void armHeight(double armSpeed, double armInches) {
 
         int newArmTarget = motorLift.getCurrentPosition() + (int) (CPI_GOBILDA26TO1 * armInches);
         motorLift.setPower(armSpeed);
@@ -133,9 +133,9 @@ public class AAABlueShippingHub extends LinearOpMode {
             telemetry.update();
         }
         motorLift.setPower(0);
-        
+
     }
-    
+
     public void armDrive(double armSpeed, double armInches){
         int newArmTarget = motorXRail.getCurrentPosition() + (int) (CPI_CORE_HEX * armInches);
         motorXRail.setPower(armSpeed);
@@ -169,7 +169,7 @@ public class AAABlueShippingHub extends LinearOpMode {
         // Stop all motion;
         drive(0, 0);
     }
-     public void elevateArm(double seconds, double power){
+    public void elevateArm(double seconds, double power){
 
         motorLift.setPower(power);
         sleep((long) (seconds * 1000));
@@ -177,40 +177,40 @@ public class AAABlueShippingHub extends LinearOpMode {
 
 
     }
-    
+
     public void hubLevel(int level){
         double armHeightSpeed = 0;
         double armHeightInches = 0;
         double armXSpeed = 0;
         double armXInches = 0;
         double spitSpeed = -0.4;
-        
+
         switch (level) {
             case 1: //Lower
                 armHeightSpeed = -0.5;
                 armHeightInches = -6;
                 armXSpeed = 0.5;
-                armXInches = 8;
+                armXInches = 6;
                 break;
             case 2: //Middle
                 armHeightSpeed = -0.5;
                 armHeightInches = -3;
                 armXSpeed = 0.5;
-                armXInches = 11.5;
+                armXInches = 8.9;
                 break;
             case 3: //Top
                 armHeightSpeed = 0;
                 armHeightInches = 0;
-                armXSpeed = 0.5;
+                armXSpeed = 1;
                 armXInches = 16;
                 break;
             default:
                 break;
-                
+
         }
         telemetry.addData("xinches ", armXInches);
 
-        
+
         armHeight(armHeightSpeed, armHeightInches);
         armDrive(armXSpeed, armXInches);
         spitOut(spitSpeed);
@@ -243,10 +243,10 @@ public class AAABlueShippingHub extends LinearOpMode {
     }
     */
     public void drive(double left, double right  ) {
-            motorLeftBACK.setPower(left);
-            motorRightBACK.setPower(right);
-            motorRightFRONT.setPower(right);
-            motorLeftFRONT.setPower(left);
+        motorLeftBACK.setPower(left);
+        motorRightBACK.setPower(right);
+        motorRightFRONT.setPower(right);
+        motorLeftFRONT.setPower(left);
     }
     private void toHub(){
         encoderDrive( 0.33, 0.6, 19, 35 );//Arc
@@ -291,11 +291,11 @@ public class AAABlueShippingHub extends LinearOpMode {
 
     }
     public void extendOrRetract(double seconds,double power){
-       
-            motorXRail.setPower(power);//30 %
-            sleep((long) (seconds * 1000));
-            motorXRail.setPower(0);
-        
+
+        motorXRail.setPower(power);//30 %
+        sleep((long) (seconds * 1000));
+        motorXRail.setPower(0);
+
     }
 
     private void reverseMotors(){
@@ -307,7 +307,7 @@ public class AAABlueShippingHub extends LinearOpMode {
         motorLeftBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorRightBACK.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorXRail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        
+
     }
 
 }

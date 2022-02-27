@@ -25,7 +25,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 import org.openftc.easyopencv.OpenCvWebcam;
 import Autonomous.OpenCvBlue;
-@Autonomous(name = "Blue Car")
+@Autonomous(name = "Blue Car Warehouse")
 public class AAABlueCarousel extends LinearOpMode {
     // Declare OpMode members.
     //Tages
@@ -71,7 +71,7 @@ public class AAABlueCarousel extends LinearOpMode {
         CPI_CORE_HEX = hexCoreCPR/4.4;
         CPI_ATV_DT = 537.7/ ( 4.75 * Math.PI);
         CPI_OMNI_DT = 537.7/ (3.75 * Math.PI);
-        CPI_GOBILDA26TO1 = 180.81*2.6;
+        CPI_GOBILDA26TO1 = 180.81*2.6/2.5;//gear ratio adjustment
         motorLeftBACK = hardwareMap.dcMotor.get("motor_0");
         motorRightBACK = hardwareMap.dcMotor.get("motor_1");
         motorLeftFRONT = hardwareMap.dcMotor.get( "motor_2");
@@ -89,7 +89,7 @@ public class AAABlueCarousel extends LinearOpMode {
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-       
+
 
         openCv = new OpenCvBlue();
         openCv.readyRed(hardwareMap, telemetry);
@@ -108,7 +108,7 @@ public class AAABlueCarousel extends LinearOpMode {
             motorSetModes(DcMotor.RunMode.RUN_USING_ENCODER);       //start encoders
 
             encoderDrive(1, 1, 1, -3);//back to carosel
-            spinDuck(0.7);
+            spinDuck(0.5);
             sleep(300);
             encoderDrive(0.3, 0.3 ,14, 14);//drive to first duck spot
             sleep(500);
@@ -127,17 +127,21 @@ public class AAABlueCarousel extends LinearOpMode {
             if (hubLevel != 3 && distance.getDistance(DistanceUnit.INCH) < 10){
                 hubLevel = 2;
                 sleep(500);
-
             }
-            //use camera here for turn to hub
-                        boolean cont = false;
 
-            if (openCv.analysis() >0 ){
-                //drive(0.05,-0.05);//turn towards hu    
+            encoderDrive(0.4, 0.4, -1, 1);
+            sleep(500);
+
+            //use camera here for turn to hub
+            int leftTarget = motorLeftBACK.getCurrentPosition() + (int) (CPI_ATV_DT * -1.0);
+
+            //use camera here for turn to hub
+            while (openCv.analysis() != 2 && !IsInRange(motorLeftBACK.getCurrentPosition(), leftTarget)){
+                drive(-0.05,0.05);//turn towards hub
                 telemetry.addData("Pos", openCv.analysis());
                 telemetry.update();
-                cont = true;
             }
+
             telemetry.addData("Pos", openCv.analysis());
             telemetry.addLine("Hub Found!");
             telemetry.update();
@@ -148,18 +152,11 @@ public class AAABlueCarousel extends LinearOpMode {
 
             //get rid of these 2 encoder drives when camera is implemented
 
-
             hubLevel(hubLevel); //drop preload in hub at hubLevel
-            encoderDrive( 0.5, 0,-8,5); //turn to warehouse
-            if (cont){ 
-            sleep(5000);
-            encoderDrive( 0.95, 1,90,90); //drive to warehouse
-            } else {
 
-                telemetry.addLine("AWW HELL NO!!");
-                telemetry.update();
-                sleep(7000);
-            }
+            encoderDrive( 0.5, 0,-10,5); //turn to warehouse
+            sleep(1000);
+            encoderDrive( 0.95, 1,90,90); //drive to warehouse
         }
     }
 
@@ -252,14 +249,14 @@ public class AAABlueCarousel extends LinearOpMode {
 
     public void spitOut(double power){
         motorCollector.setPower(power);
-        sleep(2500);
+        sleep(3500);
         motorCollector.setPower(0);
 
     }
 
     public void spinDuck(double power){//for red Carousel the value needs to be negative
         motorDuck.setPower(-power);
-        sleep(3000);
+        sleep(4000);
         motorDuck.setPower(0);
     }
 
@@ -287,8 +284,8 @@ public class AAABlueCarousel extends LinearOpMode {
             case 1: //Lower
                 armHeightSpeed = -0.5;
                 armHeightInches = -5;
-                armXSpeed = 0.5;
-                armXInches = 8;
+                armXSpeed = 0.7;
+                armXInches = 7.5;
                 break;
             case 2: //Middle
                 armHeightSpeed = -0.5;
@@ -299,7 +296,7 @@ public class AAABlueCarousel extends LinearOpMode {
             case 3: //Top
                 armHeightSpeed = 0;
                 armHeightInches = 0;
-                armXSpeed = 0.5;
+                armXSpeed = 1;
                 armXInches = 16;
                 break;
             default:
